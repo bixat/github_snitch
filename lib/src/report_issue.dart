@@ -22,60 +22,65 @@ class GhReporter {
       List<String>? labels,
       List<String>? assignees,
       int? milestone}) async {
-    if (kReleaseMode) {
+    if (!kReleaseMode) {
       String issueEndpoint = "$owner/$repo/issues";
+      bool notCreated = await issueNotCreated(title, issueEndpoint);
+      if (notCreated) {
+        Map<String, dynamic> issueBody = {
+          "owner": owner,
+          "repo": repo,
+          "title": title,
+          "body": body,
+        };
+        if (assignees != null) {
+          issueBody["assignees"] = assignees;
+        }
+        if (labels != null) {
+          issueBody["labels"] = labels;
+        }
 
-      Map<String, dynamic> issueBody = {
-        "owner": owner,
-        "repo": repo,
-        "title": title,
-        "body": body,
-      };
-      if (labels != null) {
-        issueBody["assignees"] = assignees;
-      }
-      if (labels != null) {
-        issueBody["labels"] = labels;
-      }
+        if (milestone != null) {
+          issueBody["milestone"] = milestone;
+        }
 
-      if (milestone != null) {
-        issueBody["milestone"] = milestone;
-      }
+        String issueBodyToString = json.encode(issueBody);
 
-      String issueBodyToString = json.encode(issueBody);
-
-      GhResponse response =
-          await ghRequest.request("POST", issueEndpoint, issueBodyToString);
-      if (response.statusCode == 201) {
-        log("✅ Issue reported");
+        GhResponse response =
+            await ghRequest.request("POST", issueEndpoint, issueBodyToString);
+        if (response.statusCode == 201) {
+          log("✅ Issue reported");
+        } else {
+          log("❌ Echec to report Issue");
+          log(response.response.toString());
+        }
       } else {
-        log("❌ Echec to report Issue");
-        log(response.message.toString());
+        log("Issue Already Created");
       }
     }
   }
 
   Future<void> overrideExceptions() async {
+    await createLabel("GhReporter-external",
+        "Errors not caught by Flutter Framework", "f0c2dd");
     await createLabel(
-        "GhReporter-UI", "Errors not caught by Flutter Framework", "f0c2dd");
-    await createLabel(
-        "GhReporter-Logic", "Errors caught by Flutter Framework", "6a4561");
+        "GhReporter-internal", "Errors caught by Flutter Framework", "6a4561");
+
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
-      if (!details.stack.toString().contains("/report_issue.dart")) {
+      if (!details.stack.toString().contains("github_report_issues")) {
         report(
             title: details.exception.toString(),
-            labels: ["GhReporter-UI", "bug"],
+            labels: ["GhReporter-external", "bug"],
             body:
                 "${details.exception}\n${details.stack.toString().substring(0, details.stack.toString().indexOf("#10"))}");
       }
     };
     PlatformDispatcher.instance.onError = (error, stack) {
-      if (!stack.toString().contains("/report_issue.dart")) {
+      if (!stack.toString().contains("github_report_issues")) {
         report(
             title: error.toString(),
             body: "$error\n$stack",
-            labels: ["GhReporter-Logic", "bug"]);
+            labels: ["GhReporter-internal", "bug"]);
       }
       return true;
     };
@@ -93,7 +98,27 @@ class GhReporter {
       log("✅ Label Created");
     } else {
       log("❌ Echec to Create Label");
-      log(response.message.toString());
+      log(response.response.toString());
     }
+  }
+
+  Future<bool> issueNotCreated(String title, String endpoint) async {
+    Map<dynamic, dynamic> filterBody = {
+      "state": "all",
+      "labels": ["GhReporter-external", "GhReporter-external"]
+    };
+    String encodeBody = json.encode(filterBody);
+    GhResponse ghResponse =
+        await ghRequest.request("GET", "$endpoint?title=$title", encodeBody);
+    if (ghResponse.statusCode == 200) {
+      bool notExist = true;
+      for (var e in (ghResponse.response as List)) {
+        if (e["title"] == title) {
+          notExist = false;
+        }
+      }
+      return notExist;
+    }
+    return false;
   }
 }
