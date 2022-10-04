@@ -87,18 +87,24 @@ class GhReporter {
   }
 
   createLabel(String label, String description, String color) async {
-    String labelEndpoint = "$owner/$repo/labels";
-
-    Map labelBody = {"name": label, "description": description, "color": color};
-
-    String labelBodyToString = json.encode(labelBody);
-    GhResponse response =
-        await ghRequest.request("POST", labelEndpoint, labelBodyToString);
-    if (response.statusCode == 201) {
-      log("✅ Label Created");
-    } else {
-      log("❌ Echec to Create Label");
-      log(response.response.toString());
+    bool labelNotCreated = !(await Prefs.getLabel(label));
+    if (labelNotCreated) {
+      String labelEndpoint = "$owner/$repo/labels";
+      Map labelBody = {
+        "name": label,
+        "description": description,
+        "color": color
+      };
+      String labelBodyToString = json.encode(labelBody);
+      GhResponse response =
+          await ghRequest.request("POST", labelEndpoint, labelBodyToString);
+      if (response.statusCode == 201) {
+        log("✅ Label Created");
+        Prefs.setLabel(label, true);
+      } else {
+        log("❌ Echec to Create Label");
+        log(response.response.toString());
+      }
     }
   }
 
