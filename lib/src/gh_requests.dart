@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:github_report_issues/src/gh_response.dart';
@@ -19,8 +20,6 @@ class GhRequests {
     request.headers.addAll(headers);
     StreamedResponse response = await request.send();
     var decodeResponse = json.decode(await response.stream.bytesToString());
-    return GhResponse(response.statusCode, decodeResponse["message"]);
+    return GhResponse(response.statusCode, decodeResponse);
   }
 }
-
-

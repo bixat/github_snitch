@@ -1,6 +1,6 @@
 class GhResponse {
   final int statusCode;
-  final String message;
+  final dynamic response;
 
-  GhResponse(this.statusCode, this.message);
+  GhResponse(this.statusCode, this.response);
 }
