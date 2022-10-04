@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
+import 'package:github_report_issues/src/prefs.dart';
 
 import 'gh_requests.dart';
 import 'gh_response.dart';
@@ -22,52 +23,57 @@ class GhReporter {
       List<String>? labels,
       List<String>? assignees,
       int? milestone}) async {
-    if (!kReleaseMode) {
-      String issueEndpoint = "$owner/$repo/issues";
-      bool notCreated = await issueNotCreated(title, issueEndpoint);
-      if (notCreated) {
-        Map<String, dynamic> issueBody = {
-          "owner": owner,
-          "repo": repo,
-          "title": title,
-          "body": body,
-        };
-        if (assignees != null) {
-          issueBody["assignees"] = assignees;
-        }
-        if (labels != null) {
-          issueBody["labels"] = labels;
-        }
-
-        if (milestone != null) {
-          issueBody["milestone"] = milestone;
-        }
-
-        String issueBodyToString = json.encode(issueBody);
-
-        GhResponse response =
-            await ghRequest.request("POST", issueEndpoint, issueBodyToString);
-        if (response.statusCode == 201) {
-          log("✅ Issue reported");
-        } else {
-          log("❌ Echec to report Issue");
-          log(response.response.toString());
-        }
-      } else {
-        log("Issue Already Created");
+    String issueEndpoint = "$owner/$repo/issues";
+    bool notCreated = await issueNotCreated(title, issueEndpoint);
+    if (notCreated) {
+      Map<String, dynamic> issueBody = {
+        "owner": owner,
+        "repo": repo,
+        "title": title,
+        "body": body,
+      };
+      if (assignees != null) {
+        issueBody["assignees"] = assignees;
       }
+      if (labels != null) {
+        issueBody["labels"] = labels;
+      }
+
+      if (milestone != null) {
+        issueBody["milestone"] = milestone;
+      }
+
+      String issueBodyToString = json.encode(issueBody);
+
+      GhResponse response =
+          await ghRequest.request("POST", issueEndpoint, issueBodyToString);
+      if (response.statusCode == 201) {
+        log("✅ Issue reported");
+      } else {
+        log("❌ Echec to report Issue");
+        log(response.response.toString());
+      }
+    } else {
+      log("Issue Already Created");
     }
   }
 
   Future<void> overrideExceptions() async {
-    await createLabel("GhReporter-external",
-        "Errors not caught by Flutter Framework", "f0c2dd");
-    await createLabel(
-        "GhReporter-internal", "Errors caught by Flutter Framework", "6a4561");
+    try {
+      await createLabel("GhReporter-external",
+          "Errors not caught by Flutter Framework", "f0c2dd");
+      await createLabel("GhReporter-internal",
+          "Errors caught by Flutter Framework", "6a4561");
+    } catch (e, t) {
+      log(e.toString());
+      log(t.toString());
+    }
 
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
-      if (!details.stack.toString().contains("github_report_issues")) {
+      bool issueNotFromPackage =
+          !details.stack.toString().contains("github_report_issues");
+      if (issueNotFromPackage) {
         report(
             title: details.exception.toString(),
             labels: ["GhReporter-external", "bug"],
@@ -76,7 +82,9 @@ class GhReporter {
       }
     };
     PlatformDispatcher.instance.onError = (error, stack) {
-      if (!stack.toString().contains("github_report_issues")) {
+      bool issueNotFromPackage =
+          !stack.toString().contains("github_report_issues");
+      if (issueNotFromPackage) {
         report(
             title: error.toString(),
             body: "$error\n$stack",
