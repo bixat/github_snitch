@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:github_report_issues/src/constants.dart';
 import 'package:github_report_issues/src/prefs.dart';
 
 import 'gh_requests.dart';
@@ -25,18 +26,18 @@ class GhReporter {
       int? milestone}) async {
     bool connected = await isConnected;
     if (connected) {
-      await createLabel("GhReporter-external",
+      await createLabel(externalIssueLabel,
           "Errors not caught by Flutter Framework", "f0c2dd");
-      await createLabel("GhReporter-internal",
-          "Errors caught by Flutter Framework", "6a4561");
+      await createLabel(
+          internalIssueLabel, "Errors caught by Flutter Framework", "6a4561");
       String issueEndpoint = "$owner/$repo/issues";
       bool notCreated = await issueNotCreated(title, issueEndpoint);
       if (notCreated) {
         Map<String, dynamic> issueBody = {
-          "owner": owner,
-          "repo": repo,
-          "title": title,
-          "body": body,
+          ownerBody: owner,
+          repoBody: repo,
+          bodyTitle: title,
+          bodyBody: body,
         };
         if (assignees != null) {
           issueBody["assignees"] = assignees;
@@ -67,8 +68,8 @@ class GhReporter {
       }
     } else {
       Map issue = {
-        "title": title,
-        "body": body,
+        bodyTitle: title,
+        bodyBody: body,
       };
       String issueToString = json.encode(issue);
       Prefs.set("github_report_issue${title.hashCode}", issueToString);
@@ -84,8 +85,8 @@ class GhReporter {
       for (var e in olderIssues) {
         String? issueFromPref = await Prefs.get(e);
         var issueToMap = json.decode(issueFromPref!);
-        bool reported =
-            await report(title: issueToMap["title"], body: issueToMap["body"]);
+        bool reported = await report(
+            title: issueToMap[bodyTitle], body: issueToMap[bodyBody]);
         if (reported) {
           Prefs.remove(e);
         }
@@ -99,11 +100,11 @@ class GhReporter {
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
       prepareIssue(
-          details.exception.toString(), details.stack!, "GhReporter-external");
+          details.exception.toString(), details.stack!, externalIssueLabel);
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      prepareIssue(error.toString(), stack, "GhReporter-internal");
+      prepareIssue(error.toString(), stack, internalIssueLabel);
       return true;
     };
   }
@@ -146,13 +147,13 @@ class GhReporter {
   }
 
   Future<bool> issueNotCreated(String title, String endpoint) async {
-    String params = "?state=all&labels=GhReporter-external";
+    String params = "?state=all&labels=bug";
     GhResponse ghResponse =
         await ghRequest.request("GET", endpoint + params, "");
     if (ghResponse.statusCode == 200) {
       bool notExist = true;
       for (var e in (ghResponse.response as List)) {
-        if (e["title"] == title) {
+        if (e[bodyTitle] == title) {
           notExist = false;
         }
       }
