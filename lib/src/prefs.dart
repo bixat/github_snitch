@@ -8,20 +8,29 @@ class Prefs {
     pref.setString(key, value);
   }
 
+  static remove(String key) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.remove(key);
+  }
+
   static setLabel(String key, bool value) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.setBool(key, value);
   }
 
-  static Future<bool> getLabel(String key) async {
+  static Future<bool> labelExist(String key) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    log("${pref.containsKey(key)} hhelo");
     return pref.containsKey(key);
   }
 
   static Future<String?> get(String key) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     return pref.getString(key);
+  }
+
+  static Future<Set<String>> getKeys() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getKeys();
   }
 
   static Future<bool> checkIfExist(String key) async {
