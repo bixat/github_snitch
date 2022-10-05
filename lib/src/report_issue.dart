@@ -98,28 +98,29 @@ class GhReporter {
 
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
-      bool issueNotFromPackage =
-          !details.stack.toString().contains("github_report_issues");
-      if (issueNotFromPackage) {
-        report(
-            title: details.exception.toString(),
-            labels: ["GhReporter-external", "bug"],
-            body:
-                "${details.exception}\n${details.stack.toString().substring(0, details.stack.toString().indexOf("#10"))}");
-      }
+      prepareIssue(
+          details.exception.toString(), details.stack!, "GhReporter-external");
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      bool issueNotFromPackage =
-          !stack.toString().contains("github_report_issues");
-      if (issueNotFromPackage) {
-        report(
-            title: error.toString(),
-            body: "$error\n$stack",
-            labels: ["GhReporter-internal", "bug"]);
-      }
+      prepareIssue(error.toString(), stack, "GhReporter-internal");
       return true;
     };
+  }
+
+  prepareIssue(String exception, StackTrace stack, String label) {
+    bool issueNotFromPackage =
+        !stack.toString().contains("github_report_issues");
+    if (issueNotFromPackage) {
+      String body = stack.toString();
+      if (body.contains("#10")) {
+        body = body.substring(0, stack.toString().indexOf("#10"));
+      }
+      report(
+          title: exception.toString(),
+          labels: [label, "bug"],
+          body: "**$exception**\n\n$body");
+    }
   }
 
   createLabel(String label, String description, String color) async {
