@@ -11,29 +11,48 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages).
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+Package for report app crashes & issues to it github repo
 
 ## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- Create labels for package
+	- GhReporter-external for Errors not caught by Flutter Framework
+	- GhReporter-internal for Errors caught by Flutter Framework
+- Report bugs on github issues with specific labels,assignees, milestone
+  - Automatic when initialize package as in example
+  - Manually with report method
+- Support offline case (save locally & send later when connection exist)
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+After install package you need to generate [Personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+We need also `owner username` & `repo name`
 
+We will use [dotenv](https://pub.dev/packages/flutter_dotenv) package for save this sensive keys
 ## Usage
+Create file .env
+```
+owner=owner username
+repo=repo name
+token=token genrated
+```
+```And add this file to .gitignore```
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
+Then Add this code before runApp method
 ```dart
-const like = 'sample';
+if (kReleaseMode) {
+    WidgetsFlutterBinding.ensureInitialized();
+    await dotenv.load(fileName: ".env");
+    GhReporter ghReporter = GhReporter(
+        owner: dotenv.env['owner']!,
+        token: dotenv.env['token']!,
+        repo: dotenv.env['repo']!);
+    ghReporter.initialze();
+  }
+  runApp(const MyApp());
 ```
 
-## Additional information
+If you want to test it in debug mode you can remove lReleaseMode condition
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+
+[`example`](example/lib/main.dart).
+
