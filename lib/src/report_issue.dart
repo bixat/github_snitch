@@ -101,17 +101,17 @@ class GhReporter {
 
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
-      prepareIssue(
+      prepareAndReport(
           details.exception.toString(), details.stack!, externalIssueLabel);
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      prepareIssue(error.toString(), stack, internalIssueLabel);
+      prepareAndReport(error.toString(), stack, internalIssueLabel);
       return true;
     };
   }
 
-  prepareIssue(String exception, StackTrace stack, String label) {
+  prepareAndReport(String exception, StackTrace stack, String label) {
     bool issueNotFromPackage =
         !stack.toString().contains("github_report_issues");
     if (issueNotFromPackage) {
