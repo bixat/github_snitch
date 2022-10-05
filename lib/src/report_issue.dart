@@ -8,16 +8,14 @@ import 'package:github_report_issues/src/prefs.dart';
 import 'gh_requests.dart';
 import 'gh_response.dart';
 
-//TODO:Remove this token
-//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
 class GhReporter {
   GhReporter({required this.token, required this.owner, required this.repo}) {
-    ghRequest = GhRequests(token);
+    ghRequest = GhRequest(token);
   }
   final String token;
   final String owner;
   final String repo;
-  late GhRequests ghRequest;
+  late GhRequest ghRequest;
 
   Future<bool> report(
       {required String title,
@@ -82,7 +80,6 @@ class GhReporter {
     List prefsKeys = (await Prefs.getKeys()).toList();
     List olderIssues =
         prefsKeys.where((e) => e.contains("github_report_issue")).toList();
-    print(olderIssues);
     if (olderIssues.isNotEmpty) {
       for (var e in olderIssues) {
         String? issueFromPref = await Prefs.get(e);
@@ -98,6 +95,7 @@ class GhReporter {
 
   Future<void> initialze() async {
     reportSavedIssues();
+
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
       bool issueNotFromPackage =
@@ -110,6 +108,7 @@ class GhReporter {
                 "${details.exception}\n${details.stack.toString().substring(0, details.stack.toString().indexOf("#10"))}");
       }
     };
+
     PlatformDispatcher.instance.onError = (error, stack) {
       bool issueNotFromPackage =
           !stack.toString().contains("github_report_issues");

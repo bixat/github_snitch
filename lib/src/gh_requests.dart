@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:github_report_issues/src/gh_response.dart';
 import 'package:http/http.dart';
 
-class GhRequests {
-  GhRequests(this.token);
+class GhRequest {
+  GhRequest(this.token);
   final String token;
   final String baseUrl = "https://api.github.com/repos/";
   final Map<String, String> headers = {
