@@ -28,3 +28,9 @@ migrate_working_dir/
 .dart_tool/
 .packages
 build/
+example/macos/Podfile
+example/macos/Flutter/Flutter-Debug.xcconfig
+example/macos/Flutter/Flutter-Release.xcconfig
+
+.flutter-plugins
+.flutter-plugins-dependencies

@@ -1,14 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:github_report_issues/github_report_issues.dart';
 
-void main() {
-  if (kReleaseMode) {
+Future<void> main() async {
+  if (!kReleaseMode) {
     WidgetsFlutterBinding.ensureInitialized();
+    await dotenv.load(fileName: ".env");
     GhReporter ghReporter = GhReporter(
-        owner: 'M97chahboun',
-        token: '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',
-        repo: 'gitflow');
+        owner: dotenv.env['owner']!,
+        token: dotenv.env['token']!,
+        repo: dotenv.env['repo']!);
     ghReporter.initialze();
   }
   runApp(const MyApp());
@@ -76,7 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int h = 55;
   @override
   Widget build(BuildContext context) {
-    print("hello");
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -127,10 +128,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class Screen extends StatelessWidget {
   const Screen(this.wrong, {super.key});
-  final wrong;
+  final dynamic wrong;
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Center(
+      // ignore: prefer_interpolation_to_compose_strings
       child: Text("Hello" + wrong),
     );
   }
