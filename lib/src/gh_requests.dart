@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:github_report_issues/src/gh_response.dart';
 import 'package:http/http.dart';
+
+import 'gh_response.dart';
 
 class GhRequest {
   GhRequest(this.token);

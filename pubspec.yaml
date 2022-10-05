@@ -1,4 +1,4 @@
-name: github_report_issues
+name: github_reporter
 description: Package for report app crashes & issues to it github repo
 version: 0.0.1-beta
 homepage:

@@ -3,11 +3,11 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:github_report_issues/src/constants.dart';
-import 'package:github_report_issues/src/prefs.dart';
 
+import 'constants.dart';
 import 'gh_requests.dart';
 import 'gh_response.dart';
+import 'prefs.dart';
 
 class GhReporter {
   GhReporter({required this.token, required this.owner, required this.repo}) {

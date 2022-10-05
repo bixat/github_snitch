@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:github_report_issues/github_report_issues.dart';
+import 'package:github_reporter/github_reporter.dart';
+
 
 Future<void> main() async {
   if (!kReleaseMode) {
