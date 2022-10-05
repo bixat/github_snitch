@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Prefs {
@@ -16,11 +14,6 @@ class Prefs {
   static setLabel(String key, bool value) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.setBool(key, value);
-  }
-
-  static Future<bool> labelExist(String key) async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    return pref.containsKey(key);
   }
 
   static Future<String?> get(String key) async {

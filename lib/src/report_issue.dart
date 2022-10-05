@@ -124,7 +124,7 @@ class GhReporter {
   }
 
   createLabel(String label, String description, String color) async {
-    bool labelNotCreated = !(await Prefs.labelExist(label));
+    bool labelNotCreated = !(await Prefs.checkIfExist(label));
     if (labelNotCreated) {
       String labelEndpoint = "$owner/$repo/labels";
       Map labelBody = {
