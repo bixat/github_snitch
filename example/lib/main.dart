@@ -12,7 +12,7 @@ Future<void> main() async {
         owner: dotenv.env['owner']!,
         token: dotenv.env['token']!,
         repo: dotenv.env['repo']!);
-    ghReporter.initialze();
+    ghReporter.initialize();
   }
   runApp(const MyApp());
 }

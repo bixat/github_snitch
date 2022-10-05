@@ -96,7 +96,7 @@ class GhReporter {
     }
   }
 
-  Future<void> initialze() async {
+  Future<void> initialize() async {
     reportSavedIssues();
 
     FlutterError.onError = (details) {
