@@ -70,10 +70,11 @@ class GhReporter {
       Map issue = {
         bodyTitle: title,
         bodyBody: body,
+        dateBody: DateTime.now().toUtc().toString()
       };
       String issueToString = json.encode(issue);
       Prefs.set("github_report_issue${title.hashCode}", issueToString);
-      return false;
+      return true;
     }
   }
 
@@ -86,7 +87,8 @@ class GhReporter {
         String? issueFromPref = await Prefs.get(e);
         var issueToMap = json.decode(issueFromPref!);
         bool reported = await report(
-            title: issueToMap[bodyTitle], body: issueToMap[bodyBody]);
+            title: issueToMap[bodyTitle],
+            body: issueToMap[bodyBody] + "/n" + issueToMap[dateBody]);
         if (reported) {
           Prefs.remove(e);
         }
@@ -120,7 +122,7 @@ class GhReporter {
       report(
           title: exception.toString(),
           labels: [label, "bug"],
-          body: "**$exception**\n\n$body");
+          body: "**$exception**\n\n```$body```");
     }
   }
 
