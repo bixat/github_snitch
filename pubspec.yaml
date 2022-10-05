@@ -1,6 +1,6 @@
 name: github_report_issues
-description: Package for report app issues on github
-version: 0.0.1
+description: Package for report app crashes & issues to it github repo
+version: 0.0.1-beta
 homepage:
 
 environment:
