@@ -30,6 +30,8 @@ class GhReporter {
           "Errors not caught by Flutter Framework", "f0c2dd");
       await createLabel(
           internalIssueLabel, "Errors caught by Flutter Framework", "6a4561");
+      await createLabel(fromGhReporterPackage,
+          "Errors caught by Github reporter package", "970206");
       String issueEndpoint = "$owner/$repo/issues";
       bool notCreated = await issueNotCreated(title, issueEndpoint);
       if (notCreated) {
@@ -63,7 +65,7 @@ class GhReporter {
           return false;
         }
       } else {
-        log("Issue Already Created");
+        log("✅ Issue Already Reported");
         return true;
       }
     } else {
@@ -138,7 +140,8 @@ class GhReporter {
       String labelBodyToString = json.encode(labelBody);
       GhResponse response =
           await ghRequest.request("POST", labelEndpoint, labelBodyToString);
-      if (response.statusCode == 201) {
+      if (response.statusCode == 201 ||
+          response.response["errors"][0]["code"] == "already_exists") {
         log("✅ Label Created");
         Prefs.setLabel(label, true);
       } else {
@@ -149,7 +152,7 @@ class GhReporter {
   }
 
   Future<bool> issueNotCreated(String title, String endpoint) async {
-    String params = "?state=all&labels=bug";
+    String params = "?state=all&labels=$fromGhReporterPackage";
     GhResponse ghResponse =
         await ghRequest.request("GET", endpoint + params, "");
     if (ghResponse.statusCode == 200) {
