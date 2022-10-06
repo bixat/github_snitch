@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:github_reporter/github_reporter.dart';
 
+late GhReporter ghReporter;
 
 Future<void> main() async {
-  if (!kReleaseMode) {
-    WidgetsFlutterBinding.ensureInitialized();
-    await dotenv.load(fileName: ".env");
-    GhReporter ghReporter = GhReporter(
-        owner: dotenv.env['owner']!,
-        token: dotenv.env['token']!,
-        repo: dotenv.env['repo']!);
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  ghReporter = GhReporter(
+      owner: dotenv.env['owner']!,
+      token: dotenv.env['token']!,
+      repo: dotenv.env['repo']!);
+  if (kReleaseMode) {
+    // For report exceptions & bugs
     ghReporter.initialize();
   }
   runApp(const MyApp());
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Report Issues on your repo',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Github Reporter'),
     );
   }
 }
@@ -61,6 +63,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final TextEditingController reportTitle = TextEditingController();
+  final TextEditingController reportBody = TextEditingController();
+  final GlobalKey<FormState> reportFormKey = GlobalKey<FormState>();
+  final ValueNotifier reportLoading = ValueNotifier(false);
   void _incrementCounter() {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (BuildContext context) {
@@ -90,6 +96,13 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: [
+          IconButton(
+              onPressed: () {
+                _reporteIssueOrSuggestion(context);
+              },
+              icon: const Icon(Icons.report))
+        ],
       ),
       body: Row(
         // Column is also a layout widget. It takes a list of children and
@@ -124,6 +137,99 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  Future<dynamic> _reporteIssueOrSuggestion(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            scrollable: true,
+            title: const Text("Report Issue or suggestion"),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Form(
+                key: reportFormKey,
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      validator: (String? text) {
+                        if (reportTitle.text.isEmpty) {
+                          return "Empty title";
+                        }
+                        return null;
+                      },
+                      controller: reportTitle,
+                      decoration: const InputDecoration(
+                        labelText: 'Title',
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        icon: Icon(Icons.account_box),
+                      ),
+                    ),
+                    TextFormField(
+                      controller: reportBody,
+                      maxLines: 15,
+                      validator: (String? text) {
+                        if (text!.isEmpty) {
+                          return "Empty description";
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                        labelText: "Description",
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        icon: Icon(Icons.email),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              ValueListenableBuilder(
+                  valueListenable: reportLoading,
+                  builder: (context, _, __) {
+                    return reportLoading.value
+                        ? const SizedBox(
+                            height: 20.0,
+                            width: 20.0,
+                            child: CircularProgressIndicator())
+                        : ElevatedButton(
+                            child: const Text(
+                              "Report",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            onPressed: () async {
+                              // Report issues or suggestions from app users
+                              await _report(context);
+                              // your code
+                            });
+                  })
+            ],
+          );
+        });
+  }
+
+  Future<void> _report(BuildContext context) async {
+    bool isValid = reportFormKey.currentState!.validate();
+    if (isValid) {
+      reportLoading.value = true;
+      bool sended = await ghReporter.report(
+          //TODO: manage new labels
+          labels: ["from user"],
+          assignees: [dotenv.env['owner']!],
+          title: reportTitle.text,
+          body: reportBody.text);
+      reportLoading.value = false;
+      if (sended) {
+        Navigator.of(context).pop();
+      } else {
+        const snackBar = SnackBar(
+          content: Text("Somthing wrong, try later"),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
   }
 }
 
