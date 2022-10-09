@@ -9,15 +9,27 @@ import 'gh_requests.dart';
 import 'gh_response.dart';
 import 'prefs.dart';
 
-class GhReporter {
-  GhReporter({required this.token, required this.owner, required this.repo}) {
-    ghRequest = GhRequest(token);
-  }
-  final String token;
-  final String owner;
-  final String repo;
-  late GhRequest ghRequest;
+/// The entry point for accessing Firebase.
+class GhReporterDelegate {
+  GhReporterDelegate._();
 
+  static GhReporter? ghReporterDelegate;
+
+  static GhReporter get instance {
+    return ghReporterDelegate ??= GhReporter.instance;
+  }
+
+  static initialize({required token, required owner, required repo}) {
+    instance.initialize(token: token, owner: owner, repo: repo);
+  }
+}
+
+class GhReporter {
+  late String token;
+  late String owner;
+  late String repo;
+  late GhRequest ghRequest;
+  static GhReporter get instance => GhReporter();
   Future<bool> report(
       {required String title,
       required String body,
@@ -98,7 +110,14 @@ class GhReporter {
     }
   }
 
-  Future<void> initialize() async {
+  initialize({required token, required owner, required repo}) {
+    this.token = token;
+    this.owner = owner;
+    this.repo = repo;
+    ghRequest = GhRequest(token);
+  }
+
+  Future<void> listenToExceptions() async {
     reportSavedIssues();
 
     FlutterError.onError = (details) {
@@ -177,4 +196,8 @@ class GhReporter {
       return false;
     }
   }
+}
+
+extension GHReporterExtension on Object {
+  GhReporter get ghReporter => GhReporterDelegate.instance;
 }

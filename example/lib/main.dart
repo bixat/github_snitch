@@ -3,18 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:github_reporter/github_reporter.dart';
 
-late GhReporter ghReporter;
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  ghReporter = GhReporter(
+  GhReporterDelegate.initialize(
       owner: dotenv.env['owner']!,
       token: dotenv.env['token']!,
       repo: dotenv.env['repo']!);
   if (kReleaseMode) {
-    // For report exceptions & bugs
-    ghReporter.initialize();
+    // For report exceptions & bugs Automaticlly
+    GhReporterDelegate.instance.listenToExceptions();
   }
   runApp(const MyApp());
 }
