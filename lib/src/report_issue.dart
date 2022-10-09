@@ -128,7 +128,7 @@ class GhReporter {
       }
       report(
           title: exception.toString(),
-          labels: [label, "bug"],
+          labels: [label, bugLabel],
           body: "**$exception**\n\n```$body```");
     }
   }
