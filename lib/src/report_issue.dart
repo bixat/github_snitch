@@ -96,16 +96,16 @@ class GhReporter {
     }
   }
 
-  initialize({required token, required owner, required repo}) {
+  void initialize(
+      {required String token, required String owner, required String repo}) {
     this.token = token;
     this.owner = owner;
     this.repo = repo;
     ghRequest = GhRequest(token);
   }
 
-  Future<void> listenToExceptions() async {
+  void listenToExceptions() {
     reportSavedIssues();
-
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
       prepareAndReport(
@@ -118,7 +118,8 @@ class GhReporter {
     };
   }
 
-  prepareAndReport(String exception, StackTrace stack, String label) {
+  Future<bool> prepareAndReport(
+      String exception, StackTrace stack, String label) {
     bool issueNotFromPackage =
         !stack.toString().contains("github_report_issues");
     if (issueNotFromPackage) {
@@ -126,14 +127,15 @@ class GhReporter {
       if (body.contains("#10")) {
         body = body.substring(0, stack.toString().indexOf("#10"));
       }
-      report(
+      return report(
           title: exception.toString(),
           labels: [label, bugLabel],
           body: "**$exception**\n\n```$body```");
     }
+    return Future.value(false);
   }
 
-  createLabel(String label, String description, String color) async {
+  Future<void> createLabel(String label, String description, String color) async {
     bool labelNotCreated = !(await Prefs.checkIfExist(label));
     if (labelNotCreated) {
       String labelEndpoint = "$owner/$repo/labels";
