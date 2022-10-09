@@ -12,7 +12,7 @@ Future<void> main() async {
       repo: dotenv.env['repo']!);
   if (kReleaseMode) {
     // For report exceptions & bugs Automaticlly
-    GhReporterDelegate.instance.listenToExceptions();
+    GhReporterDelegate.listenToExceptions();
   }
   runApp(const MyApp());
 }
@@ -212,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
     bool isValid = reportFormKey.currentState!.validate();
     if (isValid) {
       reportLoading.value = true;
-      bool sended = await ghReporter.report(
+      bool sended = await GhReporterDelegate.report(
           //TODO: manage new labels
           labels: ["from user"],
           assignees: [dotenv.env['owner']!],
