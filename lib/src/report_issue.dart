@@ -135,7 +135,8 @@ class GhReporter {
     return Future.value(false);
   }
 
-  Future<void> createLabel(String label, String description, String color) async {
+  Future<void> createLabel(
+      String label, String description, String color) async {
     bool labelNotCreated = !(await Prefs.checkIfExist(label));
     if (labelNotCreated) {
       String labelEndpoint = "$owner/$repo/labels";

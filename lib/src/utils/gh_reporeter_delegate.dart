@@ -1,5 +1,3 @@
-
-
 import '../report_issue.dart';
 
 class GhReporterDelegate {
