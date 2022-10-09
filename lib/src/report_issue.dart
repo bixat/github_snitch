@@ -4,25 +4,10 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-import 'constants.dart';
-import 'gh_requests.dart';
-import 'gh_response.dart';
-import 'prefs.dart';
-
-/// The entry point for accessing Firebase.
-class GhReporterDelegate {
-  GhReporterDelegate._();
-
-  static GhReporter? ghReporterDelegate;
-
-  static GhReporter get instance {
-    return ghReporterDelegate ??= GhReporter.instance;
-  }
-
-  static initialize({required token, required owner, required repo}) {
-    instance.initialize(token: token, owner: owner, repo: repo);
-  }
-}
+import 'utils/constants.dart';
+import 'utils/gh_requests.dart';
+import 'utils/gh_response.dart';
+import 'utils/prefs.dart';
 
 class GhReporter {
   late String token;
@@ -58,6 +43,7 @@ class GhReporter {
         }
         if (labels != null) {
           issueBody["labels"] = labels;
+          labels.add(fromGhReporterPackage);
         }
 
         if (milestone != null) {
@@ -196,8 +182,4 @@ class GhReporter {
       return false;
     }
   }
-}
-
-extension GHReporterExtension on Object {
-  GhReporter get ghReporter => GhReporterDelegate.instance;
 }
