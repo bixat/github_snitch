@@ -17,10 +17,16 @@ Package for report app crashes & issues to it github repo
 - Create labels for package
 	- GhReporter-external for Errors not caught by Flutter Framework
 	- GhReporter-internal for Errors caught by Flutter Framework
+  - Reported by GhReporter Package for know which issues reported from this package
 - Report bugs on github issues with specific labels,assignees, milestone
-  - Automatic when initialize package as in example
-  - Manually with report method
+  - Automatic when call `listenToExceptions` method in `main` as in example
+  - Manually with `report` method
 - Support offline case (save locally & send later when connection exist)
+
+## TODO
+- [ ] Fetch issue comments & give user to discuss his issue/proposal from app with repo contributors
+
+💡 Feel free to add any idea 
 
 ## Getting started
 
@@ -39,20 +45,20 @@ token=token genrated
 
 Then Add this code before runApp method
 ```dart
-if (kReleaseMode) {
-    WidgetsFlutterBinding.ensureInitialized();
-    await dotenv.load(fileName: ".env");
-    GhReporter ghReporter = GhReporter(
-        owner: dotenv.env['owner']!,
-        token: dotenv.env['token']!,
-        repo: dotenv.env['repo']!);
-    ghReporter.initialze();
+WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  GhReporter.initialize(
+      owner: dotenv.env['owner']!,
+      token: dotenv.env['token']!,
+      repo: dotenv.env['repo']!);
+  if (kReleaseMode) {
+    // For report exceptions & bugs Automaticlly
+    GhReporte.listenToExceptions();
   }
   runApp(const MyApp());
 ```
+For report issues Manually (from users) check _report method on [`example`](example/lib/main.dart)
 
-If you want to test it in debug mode you can remove lReleaseMode condition
+If you want to test it in debug mode you can remove ReleaseMode condition
 
-
-[`example`](example/lib/main.dart).
-
+Finally feel free to contribute 
