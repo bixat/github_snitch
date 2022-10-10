@@ -9,12 +9,12 @@ import 'utils/gh_requests.dart';
 import 'utils/gh_response.dart';
 import 'utils/prefs.dart';
 
-class GhReporter {
+class GhReporterIssues {
   String? token;
   String? owner;
   String? repo;
   late GhRequest ghRequest;
-  static GhReporter get instance => GhReporter();
+  static GhReporterIssues get instance => GhReporterIssues();
   bool get initialized => token != null && repo != null && owner != null;
 
   Future<bool> report(
@@ -158,7 +158,7 @@ class GhReporter {
         log("❌ Echec to Create $label Label");
         log(response.response.toString());
       }
-    }else{
+    } else {
       log("✅ $label Label Already Created");
     }
   }

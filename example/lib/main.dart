@@ -6,13 +6,13 @@ import 'package:github_reporter/github_reporter.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  GhReporterDelegate.initialize(
+  GhReporter.initialize(
       owner: dotenv.env['owner']!,
       token: dotenv.env['token']!,
       repo: dotenv.env['repo']!);
   if (kReleaseMode) {
     // For report exceptions & bugs Automaticlly
-    GhReporterDelegate.listenToExceptions();
+    GhReporter.listenToExceptions();
   }
   runApp(const MyApp());
 }
@@ -212,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
     bool isValid = reportFormKey.currentState!.validate();
     if (isValid) {
       reportLoading.value = true;
-      bool sended = await GhReporterDelegate.report(
+      bool sended = await GhReporter.report(
           //TODO: manage new labels
           labels: ["from user"],
           assignees: [dotenv.env['owner']!],

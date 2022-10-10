@@ -1,23 +1,23 @@
 import '../report_issue.dart';
 
-class GhReporterDelegate {
-  GhReporterDelegate._();
+class GhReporter {
+  GhReporter._();
 
-  static GhReporter? ghReporterDelegate;
+  static GhReporterIssues? _ghReporterDelegate;
 
-  static GhReporter get instance {
-    return ghReporterDelegate ??= GhReporter.instance;
+  static GhReporterIssues get _instance {
+    return _ghReporterDelegate ??= GhReporterIssues.instance;
   }
 
   /// Listen to exceptions & bugs then report it on github Automaticlly
   static void listenToExceptions() {
     _handleNotInitialized();
-    instance.listenToExceptions();
+    _instance.listenToExceptions();
   }
 
   /// Initialize GhReporter
   static initialize({required token, required owner, required repo}) {
-    instance.initialize(token: token, owner: owner, repo: repo);
+    _instance.initialize(token: token, owner: owner, repo: repo);
   }
 
   /// Report issue or proposal manually
@@ -28,7 +28,7 @@ class GhReporterDelegate {
       List<String>? assignees,
       int? milestone}) {
     _handleNotInitialized();
-    return instance.report(
+    return _instance.report(
         title: title,
         body: body,
         labels: labels,
@@ -48,6 +48,6 @@ class GhReporterDelegate {
     // For report exceptions & bugs Automaticlly
     GhReporterDelegate.listenToExceptions();
   }""";
-    assert(instance.initialized, solve);
+    assert(_instance.initialized, solve);
   }
 }
