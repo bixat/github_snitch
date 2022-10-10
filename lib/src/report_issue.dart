@@ -152,12 +152,14 @@ class GhReporter {
           await ghRequest.request("POST", labelEndpoint, labelBodyToString);
       if (response.statusCode == 201 ||
           response.response["errors"][0]["code"] == "already_exists") {
-        log("✅ Label Created");
+        log("✅ $label Label Created");
         Prefs.setLabel(label, true);
       } else {
-        log("❌ Echec to Create Label");
+        log("❌ Echec to Create $label Label");
         log(response.response.toString());
       }
+    }else{
+      log("✅ $label Label Already Created");
     }
   }
 
