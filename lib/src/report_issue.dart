@@ -10,11 +10,13 @@ import 'utils/gh_response.dart';
 import 'utils/prefs.dart';
 
 class GhReporter {
-  late String token;
-  late String owner;
-  late String repo;
+  String? token;
+  String? owner;
+  String? repo;
   late GhRequest ghRequest;
   static GhReporter get instance => GhReporter();
+  bool get initialized => token != null && repo != null && owner != null;
+
   Future<bool> report(
       {required String title,
       required String body,

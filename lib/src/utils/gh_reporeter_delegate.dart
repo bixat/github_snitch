@@ -11,6 +11,7 @@ class GhReporterDelegate {
 
   /// Listen to exceptions & bugs then report it on github Automaticlly
   static void listenToExceptions() {
+    _handleNotInitialized();
     instance.listenToExceptions();
   }
 
@@ -26,6 +27,7 @@ class GhReporterDelegate {
       List<String>? labels,
       List<String>? assignees,
       int? milestone}) {
+    _handleNotInitialized();
     return instance.report(
         title: title,
         body: body,
@@ -33,5 +35,19 @@ class GhReporterDelegate {
         assignees: assignees,
         milestone: milestone);
   }
-  
+
+  static _handleNotInitialized() {
+    String solve =
+        """GhReporter not initialized, add this code before runApp method \nWidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  GhReporterDelegate.initialize(
+      owner: dotenv.env['owner']!,
+      token: dotenv.env['token']!,
+      repo: dotenv.env['repo']!);
+  if (kReleaseMode) {
+    // For report exceptions & bugs Automaticlly
+    GhReporterDelegate.listenToExceptions();
+  }""";
+    assert(instance.initialized, solve);
+  }
 }
