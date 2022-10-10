@@ -9,14 +9,17 @@ class GhReporterDelegate {
     return ghReporterDelegate ??= GhReporter.instance;
   }
 
+  /// Listen to exceptions & bugs then report it on github Automaticlly
   static void listenToExceptions() {
     instance.listenToExceptions();
   }
 
+  /// Initialize GhReporter
   static initialize({required token, required owner, required repo}) {
     instance.initialize(token: token, owner: owner, repo: repo);
   }
 
+  /// Report issue or proposal manually
   static Future<bool> report(
       {required String title,
       required String body,
@@ -30,4 +33,5 @@ class GhReporterDelegate {
         assignees: assignees,
         milestone: milestone);
   }
+  
 }
