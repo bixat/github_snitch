@@ -213,7 +213,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (isValid) {
       reportLoading.value = true;
       bool sended = await GhReporter.report(
-          //TODO: manage new labels
           labels: ["from user"],
           assignees: [dotenv.env['owner']!],
           title: reportTitle.text,

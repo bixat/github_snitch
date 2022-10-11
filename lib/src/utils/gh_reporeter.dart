@@ -16,7 +16,8 @@ class GhReporter {
   }
 
   /// Initialize GhReporter
-  static initialize({required token, required owner, required repo}) {
+  static initialize(
+      {required String token, required String owner, required String repo}) {
     _instance.initialize(token: token, owner: owner, repo: repo);
   }
 
