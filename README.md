@@ -11,7 +11,7 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages).
 -->
 
-Package for report app crashes & issues to it github repo
+## Package for open github issue for crashes, issues & proposals
 
 ## Features
 - Create labels for package
@@ -19,7 +19,7 @@ Package for report app crashes & issues to it github repo
 	- GhReporter-internal for Errors caught by Flutter Framework
   - Reported by GhReporter Package for know which issues reported from this package
 - Report bugs on github issues with specific labels,assignees, milestone
-  - Automatic when call `listenToExceptions` method in `main` as in example
+  - Automaticlly when call `listenToExceptions` method in `main` as in example
   - Manually with `report` method
 - Support offline case (save locally & send later when connection exist)
 
@@ -61,4 +61,4 @@ For report issues Manually (from users) check _report method on [`example`](exam
 
 If you want to test it in debug mode you can remove ReleaseMode condition
 
-Finally feel free to contribute 
+⚙️ Finally feel free to contribute ⚙️
