@@ -1,12 +1,12 @@
-import '../report_issue.dart';
+import 'utils/github_snitch_instance.dart';
 
-class GhReporter {
-  GhReporter._();
+class GhSnitch {
+  GhSnitch._();
 
-  static GhReporterIssues? _ghReporterDelegate;
+  static GhSnitchInstance? _ghSnitchDelegate;
 
-  static GhReporterIssues get _instance {
-    return _ghReporterDelegate ??= GhReporterIssues.instance;
+  static GhSnitchInstance get _instance {
+    return _ghSnitchDelegate ??= GhSnitchInstance.instance;
   }
 
   /// Listen to exceptions & bugs then report it on github Automaticlly
@@ -15,7 +15,7 @@ class GhReporter {
     _instance.listenToExceptions();
   }
 
-  /// Initialize GhReporter
+  /// Initialize GhSnitch
   static initialize(
       {required String token, required String owner, required String repo}) {
     _instance.initialize(token: token, owner: owner, repo: repo);
@@ -39,15 +39,15 @@ class GhReporter {
 
   static _handleNotInitialized() {
     String solve =
-        """GhReporter not initialized, add this code before runApp method \nWidgetsFlutterBinding.ensureInitialized();
+        """GhSnitch not initialized, add this code before runApp method \nWidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  GhReporterDelegate.initialize(
+  GhSnitchDelegate.initialize(
       owner: dotenv.env['owner']!,
       token: dotenv.env['token']!,
       repo: dotenv.env['repo']!);
   if (kReleaseMode) {
     // For report exceptions & bugs Automaticlly
-    GhReporterDelegate.listenToExceptions();
+    GhSnitchDelegate.listenToExceptions();
   }""";
     assert(_instance.initialized, solve);
   }

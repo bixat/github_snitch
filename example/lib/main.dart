@@ -1,18 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:github_reporter/github_reporter.dart';
+import 'package:github_snitch/github_snitch.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  GhReporter.initialize(
+  GhSnitch.initialize(
       owner: dotenv.env['owner']!,
       token: dotenv.env['token']!,
       repo: dotenv.env['repo']!);
-  if (kReleaseMode) {
+  if (!kReleaseMode) {
     // For report exceptions & bugs Automaticlly
-    GhReporter.listenToExceptions();
+    GhSnitch.listenToExceptions();
   }
   runApp(const MyApp());
 }
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Github Reporter'),
+      home: const MyHomePage(title: 'Github Snitch'),
     );
   }
 }
@@ -212,7 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
     bool isValid = reportFormKey.currentState!.validate();
     if (isValid) {
       reportLoading.value = true;
-      bool sended = await GhReporter.report(
+      bool sended = await GhSnitch.report(
           labels: ["from user"],
           assignees: [dotenv.env['owner']!],
           title: reportTitle.text,

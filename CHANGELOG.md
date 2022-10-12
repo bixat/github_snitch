@@ -4,7 +4,7 @@
   - Automaticlly when call `listenToExceptions` method in `main` as in example
   - Manually with `report` method
 * Create labels
-	- GhReporter-external for Errors not caught by Flutter Framework
-	- GhReporter-internal for Errors caught by Flutter Framework
-	- Reported by GhReporter Package for know which issues reported from this package
+	- GhSnitch-external for Errors not caught by Flutter Framework
+	- GhSnitch-internal for Errors caught by Flutter Framework
+	- Reported by GhSnitch Package for know which issues reported from this package
 * Support offline case (save locally & send later when connection exist)

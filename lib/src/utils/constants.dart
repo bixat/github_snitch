@@ -1,6 +1,6 @@
-const String externalIssueLabel = "GhReporter-external";
-const String internalIssueLabel = "GhReporter-internal";
-const String fromGhReporterPackage = "Reported by GhReporter Package";
+const String externalIssueLabel = "GhSnitch-external";
+const String internalIssueLabel = "GhSnitch-internal";
+const String fromGhRSnitchPackage = "Reported by GhSnitch Package";
 const String bugLabel = "bug";
 const String bodyTitle = "title";
 const String bodyBody = "body";

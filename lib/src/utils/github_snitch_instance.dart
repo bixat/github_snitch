@@ -4,17 +4,17 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-import 'utils/constants.dart';
-import 'utils/gh_requests.dart';
-import 'utils/gh_response.dart';
-import 'utils/prefs.dart';
+import 'constants.dart';
+import 'gh_requests.dart';
+import 'gh_response.dart';
+import 'prefs.dart';
 
-class GhReporterIssues {
+class GhSnitchInstance {
   String? token;
   String? owner;
   String? repo;
   late GhRequest ghRequest;
-  static GhReporterIssues get instance => GhReporterIssues();
+  static GhSnitchInstance get instance => GhSnitchInstance();
   bool get initialized => token != null && repo != null && owner != null;
 
   Future<bool> report(
@@ -29,8 +29,8 @@ class GhReporterIssues {
           "Errors not caught by Flutter Framework", "f0c2dd");
       await createLabel(
           internalIssueLabel, "Errors caught by Flutter Framework", "6a4561");
-      await createLabel(fromGhReporterPackage,
-          "Errors caught by Github reporter package", "970206");
+      await createLabel(fromGhRSnitchPackage,
+          "Errors caught by Github Snitch package", "970206");
       String issueEndpoint = "$owner/$repo/issues";
       bool notCreated = await issueNotCreated(title, issueEndpoint);
       if (notCreated) {
@@ -45,7 +45,7 @@ class GhReporterIssues {
         }
         if (labels != null) {
           issueBody["labels"] = labels;
-          labels.add(fromGhReporterPackage);
+          labels.add(fromGhRSnitchPackage);
         }
 
         if (milestone != null) {
@@ -122,8 +122,7 @@ class GhReporterIssues {
 
   Future<bool> prepareAndReport(
       String exception, StackTrace stack, String label) {
-    bool issueNotFromPackage =
-        !stack.toString().contains("github_report_issues");
+    bool issueNotFromPackage = !stack.toString().contains("github_snitch");
     if (issueNotFromPackage) {
       String body = stack.toString();
       if (body.contains("#10")) {
@@ -164,7 +163,7 @@ class GhReporterIssues {
   }
 
   Future<bool> issueNotCreated(String title, String endpoint) async {
-    String params = "?state=all&labels=$fromGhReporterPackage";
+    String params = "?state=all&labels=$fromGhRSnitchPackage";
     GhResponse ghResponse =
         await ghRequest.request("GET", endpoint + params, "");
     if (ghResponse.statusCode == 200) {

@@ -1,4 +1,4 @@
-name: github_reporter
+name: github_snitch
 description: Package for report app crashes & issues to it github repo
 version: 0.0.1-beta
 homepage:
