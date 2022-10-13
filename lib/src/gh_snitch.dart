@@ -41,13 +41,13 @@ class GhSnitch {
     String solve =
         """GhSnitch not initialized, add this code before runApp method \nWidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  GhSnitchDelegate.initialize(
+  GhSnitch.initialize(
       owner: dotenv.env['owner']!,
       token: dotenv.env['token']!,
       repo: dotenv.env['repo']!);
   if (kReleaseMode) {
     // For report exceptions & bugs Automaticlly
-    GhSnitchDelegate.listenToExceptions();
+    GhSnitch.listenToExceptions();
   }""";
     assert(_instance.initialized, solve);
   }
