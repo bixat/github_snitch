@@ -104,6 +104,7 @@ class GhSnitchInstance {
     this.owner = owner;
     this.repo = repo;
     ghRequest = GhRequest(token);
+    log("✅ GhSnitch initialized");
   }
 
   void listenToExceptions() {
@@ -118,6 +119,7 @@ class GhSnitchInstance {
       prepareAndReport(error.toString(), stack, internalIssueLabel);
       return true;
     };
+    log("✅ GhSnitch Listen to exceptions");
   }
 
   Future<bool> prepareAndReport(
