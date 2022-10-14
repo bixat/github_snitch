@@ -10,9 +10,9 @@ class GhSnitch {
   }
 
   /// Listen to exceptions & bugs then report it on github Automaticlly
-  static void listenToExceptions() {
+  static void listenToExceptions({List<String>? assignees, int? milestone}) {
     _handleNotInitialized();
-    _instance.listenToExceptions();
+    _instance.listenToExceptions(milestone: milestone, assignees: assignees);
   }
 
   /// Initialize GhSnitch

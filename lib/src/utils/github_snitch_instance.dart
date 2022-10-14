@@ -93,6 +93,7 @@ class GhSnitchInstance {
             body: issueToMap[bodyBody] + "/n" + issueToMap[dateBody]);
         if (reported) {
           Prefs.remove(e);
+          log("✅ Reported saved issue");
         }
       }
     }
@@ -104,26 +105,36 @@ class GhSnitchInstance {
     this.owner = owner;
     this.repo = repo;
     ghRequest = GhRequest(token);
+    reportSavedIssues();
     log("✅ GhSnitch initialized");
   }
 
-  void listenToExceptions() {
-    reportSavedIssues();
+  void listenToExceptions({
+    List<String>? assignees,
+    int? milestone,
+  }) {
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
       prepareAndReport(
-          details.exception.toString(), details.stack!, externalIssueLabel);
+          details.exception.toString(), details.stack!, externalIssueLabel,
+          assignees: assignees, milestone: milestone);
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      prepareAndReport(error.toString(), stack, internalIssueLabel);
+      prepareAndReport(error.toString(), stack, internalIssueLabel,
+          assignees: assignees, milestone: milestone);
       return true;
     };
     log("✅ GhSnitch Listen to exceptions");
   }
 
   Future<bool> prepareAndReport(
-      String exception, StackTrace stack, String label) {
+    String exception,
+    StackTrace stack,
+    String label, {
+    List<String>? assignees,
+    int? milestone,
+  }) {
     bool issueNotFromPackage = !stack.toString().contains("github_snitch");
     if (issueNotFromPackage) {
       String body = stack.toString();
@@ -133,7 +144,9 @@ class GhSnitchInstance {
       return report(
           title: exception.toString(),
           labels: [label, bugLabel],
-          body: "**$exception**\n\n```$body```");
+          body: "**$exception**\n\n```$body```",
+          milestone: milestone,
+          assignees: assignees);
     }
     return Future.value(false);
   }
