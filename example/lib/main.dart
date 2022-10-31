@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:github_snitch/github_snitch.dart';
@@ -7,7 +5,6 @@ import 'package:github_snitch/github_snitch.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const String owner = String.fromEnvironment('owner');
-  log(owner);
   GhSnitch.initialize(
       owner: owner,
       token: const String.fromEnvironment('token'),
@@ -221,11 +218,13 @@ class _MyHomePageState extends State<MyHomePage> {
           body: reportBody.text);
       reportLoading.value = false;
       if (sended) {
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pop();
       } else {
         const snackBar = SnackBar(
           content: Text("Somthing wrong, try later"),
         );
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
