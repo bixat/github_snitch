@@ -33,27 +33,27 @@ and the Flutter guide for
 After install package you need to generate [Personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 We need also `owner username` & `repo name`
 
-We will use [dotenv](https://pub.dev/packages/flutter_dotenv) package for save this sensive keys
+We will use Environment variables for save this sensive keys
 ## Usage
-Create file .env
+
+For run or build app just pass --dart-define for every key as example :
+
 ```
-owner=owner username
-repo=repo name
-token=token genrated
+flutter build apk --split-per-abi --dart-define owner=owner --dart-define repo=repo --dart-define token=token
 ```
-```And add this file to .gitignore```
 
 Then Add this code before runApp method
+As you see we used keys from Environment
 ```dart
 WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  const String owner = String.fromEnvironment('owner');
   GhSnitch.initialize(
-      owner: dotenv.env['owner']!,
-      token: dotenv.env['token']!,
-      repo: dotenv.env['repo']!);
-  if (kReleaseMode) {
+      owner: owner,
+      token: const String.fromEnvironment('token'),
+      repo: const String.fromEnvironment("repo"));
+  if (!kReleaseMode) {
     // For report exceptions & bugs Automaticlly
-    GhReporte.listenToExceptions();
+    GhSnitch.listenToExceptions(assignees: [owner]);
   }
   runApp(const MyApp());
 ```

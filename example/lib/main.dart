@@ -1,18 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:github_snitch/github_snitch.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  const String owner = String.fromEnvironment('owner');
   GhSnitch.initialize(
-      owner: dotenv.env['owner']!,
-      token: dotenv.env['token']!,
-      repo: dotenv.env['repo']!);
+      owner: owner,
+      token: const String.fromEnvironment('token'),
+      repo: const String.fromEnvironment("repo"));
   if (!kReleaseMode) {
     // For report exceptions & bugs Automaticlly
-    GhSnitch.listenToExceptions();
+    GhSnitch.listenToExceptions(assignees: [owner]);
   }
   runApp(const MyApp());
 }
@@ -214,16 +213,18 @@ class _MyHomePageState extends State<MyHomePage> {
       reportLoading.value = true;
       bool sended = await GhSnitch.report(
           labels: ["from user"],
-          assignees: [dotenv.env['owner']!],
+          assignees: [const String.fromEnvironment('owner')],
           title: reportTitle.text,
           body: reportBody.text);
       reportLoading.value = false;
       if (sended) {
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pop();
       } else {
         const snackBar = SnackBar(
           content: Text("Somthing wrong, try later"),
         );
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
