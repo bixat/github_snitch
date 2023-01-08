@@ -1,5 +1,5 @@
 name: github_snitch
-description: Package for report app crashes & issues to it github repo
+description: Package for capture & open github issue for crashes, issues & proposals
 version: 0.0.1-beta
 homepage: https://github.com/M97Chahboun/github_snitch
 
