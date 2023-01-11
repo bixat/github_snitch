@@ -42,14 +42,14 @@ class GhSnitch {
   static _handleNotInitialized() {
     String solve =
         """GhSnitch not initialized, add this code before runApp method \nWidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  const String owner = String.fromEnvironment('owner');
   GhSnitch.initialize(
-      owner: dotenv.env['owner']!,
-      token: dotenv.env['token']!,
-      repo: dotenv.env['repo']!);
-  if (kReleaseMode) {
+      owner: owner,
+      token: const String.fromEnvironment('token'),
+      repo: const String.fromEnvironment("repo"));
+  if (!kReleaseMode) {
     // For report exceptions & bugs Automaticlly
-    GhSnitch.listenToExceptions();
+    GhSnitch.listenToExceptions(assignees: [owner]);
   }""";
     assert(_instance.initialized, solve);
   }

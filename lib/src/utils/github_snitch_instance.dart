@@ -4,8 +4,10 @@ import 'dart:io';
 
 import 'package:client_information/client_information.dart';
 import 'package:flutter/foundation.dart';
-import 'package:github_snitch/github_snitch.dart';
+import 'package:github_snitch/src/utils/compare.dart';
 
+import '../models/comment.dart';
+import '../models/issue.dart';
 import 'constants.dart';
 import 'gh_requests.dart';
 import 'gh_response.dart';
@@ -34,7 +36,7 @@ class GhSnitchInstance {
       await createLabel(fromGhRSnitchPackage,
           "Errors caught by Github Snitch package", "970206");
       String issueEndpoint = "$owner/$repo/issues";
-      bool notCreated = await issueNotCreated(title, issueEndpoint);
+      bool notCreated = await issueIsNew(body, issueEndpoint);
       if (notCreated) {
         Map<String, dynamic> issueBody = {
           ownerBody: owner,
@@ -112,9 +114,13 @@ class GhSnitchInstance {
     this.token = token;
     this.owner = owner;
     this.repo = repo;
-    ghRequest = GhRequest(token);
-    reportSavedIssues();
-    log("✅ GhSnitch initialized");
+    if (token.isEmpty || owner.isEmpty || repo.isEmpty) {
+      log("🔴 Echec to initialize GhSnitch");
+    } else {
+      ghRequest = GhRequest(token);
+      reportSavedIssues();
+      log("✅ GhSnitch initialized $repo");
+    }
   }
 
   void listenToExceptions({
@@ -185,14 +191,15 @@ class GhSnitchInstance {
     }
   }
 
-  Future<bool> issueNotCreated(String title, String endpoint) async {
+  Future<bool> issueIsNew(String body, String endpoint) async {
     String params = "?state=all&labels=$fromGhRSnitchPackage";
     GhResponse ghResponse =
         await ghRequest.request("GET", endpoint + params, "");
     if (ghResponse.statusCode == 200) {
       bool notExist = true;
       for (var e in (ghResponse.response as List)) {
-        if (e[bodyTitle] == title) {
+        double comparePercent = compare(e[bodyBody], body);
+        if (comparePercent <= 80.0) {
           notExist = false;
         }
       }

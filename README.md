@@ -51,7 +51,7 @@ WidgetsFlutterBinding.ensureInitialized();
       owner: owner,
       token: const String.fromEnvironment('token'),
       repo: const String.fromEnvironment("repo"));
-  if (!kReleaseMode) {
+  if (kReleaseMode) {
     // For report exceptions & bugs Automaticlly
     GhSnitch.listenToExceptions(assignees: [owner]);
   }

@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _incrementCounter() {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (BuildContext context) {
-      return const Screen([]);
+      return const ScreenError(555);
     }));
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -139,8 +139,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class Screen extends StatelessWidget {
-  const Screen(this.wrong, {super.key});
+class ScreenError extends StatelessWidget {
+  const ScreenError(this.wrong, {super.key});
   final dynamic wrong;
   @override
   Widget build(BuildContext context) {
