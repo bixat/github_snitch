@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:client_information/client_information.dart';
 import 'package:flutter/foundation.dart';
 import 'package:github_snitch/src/utils/compare.dart';
 
@@ -58,6 +59,12 @@ class GhSnitchInstance {
         GhResponse response =
             await ghRequest.request("POST", issueEndpoint, issueBodyToString);
         if (response.statusCode == 201) {
+          Map issueFieldsDecoded = Map.from(response.response);
+          issueFieldsDecoded
+              .removeWhere((key, value) => !issueFieldUses.contains(key));
+          String issueFieldsEncoded = json.encode(issueFieldsDecoded);
+          Prefs.set(
+              "gh_issue_${response.response['number']}", issueFieldsEncoded);
           log("✅ Issue reported");
           return true;
         } else {
@@ -197,6 +204,47 @@ class GhSnitchInstance {
       return notExist;
     }
     return false;
+  }
+
+  Future<Issue> getReportsComments() async {
+    final Issue issues = Issue();
+    Set<String> keys = await Prefs.getKeys();
+    List issueKeys = keys.where((e) => e.contains("gh_issue_")).toList();
+    ClientInformation info = await ClientInformation.fetch();
+    for (var key in issueKeys) {
+      String? issueFields = await Prefs.get(key);
+      var issueFieldsDecoded = json.decode(issueFields!);
+      final Issue issue = Issue(deviceId: info.deviceId);
+      log(issueFieldsDecoded.toString());
+      issue.fromJson(issueFieldsDecoded);
+      String listCommentsEp = "$owner/$repo/issues/${issue.id}/comments";
+      GhResponse response = await ghRequest.request("GET", listCommentsEp, "");
+      issue.comments!.setMulti(response.response);
+      issues.multi.add(issue);
+    }
+    return issues;
+  }
+
+  Future<bool> submitComment(String reportId, String comment) async {
+    bool commented = false;
+    String submitCommentEp = "$owner/$repo/issues/$reportId/comments";
+    ClientInformation info = await ClientInformation.fetch();
+    Map commentBody = {
+      commentsBodyField:
+          "$comment\n${deviceIdTemplate.replaceFirst(idMark, info.deviceId)}"
+    };
+    String commentBodyToString = json.encode(commentBody);
+    GhResponse response =
+        await ghRequest.request("POST", submitCommentEp, commentBodyToString);
+    if (response.statusCode == 201) {
+      log("✅ Commented Issue");
+      commented = true;
+    } else {
+      log("❌ Echec to Comment Issue");
+      log(response.response.toString());
+      commented = false;
+    }
+    return commented;
   }
 
   Future get isConnected async {

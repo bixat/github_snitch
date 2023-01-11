@@ -1,3 +1,5 @@
+import 'package:github_snitch/src/models/issue.dart';
+
 import 'utils/github_snitch_instance.dart';
 
 class GhSnitch {
@@ -50,5 +52,13 @@ class GhSnitch {
     GhSnitch.listenToExceptions(assignees: [owner]);
   }""";
     assert(_instance.initialized, solve);
+  }
+
+  static Future<Issue> getReportsComments() {
+    return _instance.getReportsComments();
+  }
+
+  static Future<bool> submitComment(String reportId, String comment) {
+    return _instance.submitComment(reportId, comment);
   }
 }
