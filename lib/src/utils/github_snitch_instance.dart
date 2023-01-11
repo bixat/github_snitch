@@ -199,7 +199,7 @@ class GhSnitchInstance {
       bool notExist = true;
       for (var e in (ghResponse.response as List)) {
         double comparePercent = compare(e[bodyBody], body);
-        if (comparePercent <= 80.0) {
+        if (comparePercent >= 80.0) {
           notExist = false;
         }
       }
@@ -217,7 +217,6 @@ class GhSnitchInstance {
       String? issueFields = await Prefs.get(key);
       var issueFieldsDecoded = json.decode(issueFields!);
       final Issue issue = Issue(deviceId: info.deviceId);
-      log(issueFieldsDecoded.toString());
       issue.fromJson(issueFieldsDecoded);
       String listCommentsEp = "$owner/$repo/issues/${issue.id}/comments";
       GhResponse response = await ghRequest.request("GET", listCommentsEp, "");
