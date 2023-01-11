@@ -6,6 +6,8 @@ import 'package:client_information/client_information.dart';
 import 'package:flutter/foundation.dart';
 import 'package:github_snitch/src/utils/compare.dart';
 
+import '../models/comment.dart';
+import '../models/issue.dart';
 import 'constants.dart';
 import 'gh_requests.dart';
 import 'gh_response.dart';
