@@ -199,7 +199,7 @@ class GhSnitchInstance {
       bool notExist = true;
       for (var e in (ghResponse.response as List)) {
         double comparePercent = compare(e[bodyBody], body);
-        if (comparePercent <= 80.0) {
+        if (comparePercent >= 80.0) {
           notExist = false;
         }
       }
