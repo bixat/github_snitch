@@ -5,11 +5,12 @@ const String deviceIdStr = "[device_id";
 class Comment {
   String? body;
   String? date;
-  bool isFromUser = false;
+  bool isFromUser;
   List<Comment> multi = [];
   Comment({
     this.body,
     this.date,
+    this.isFromUser = false,
   });
 
   void fromJson(Map<String, dynamic> json) {
