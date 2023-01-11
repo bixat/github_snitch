@@ -1,3 +1,4 @@
+import 'package:example/reports.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:github_snitch/github_snitch.dart';
@@ -9,7 +10,8 @@ Future<void> main() async {
       owner: owner,
       token: const String.fromEnvironment('token'),
       repo: const String.fromEnvironment("repo"));
-  if (!kReleaseMode) {
+
+  if (kReleaseMode) {
     // For report exceptions & bugs Automaticlly
     GhSnitch.listenToExceptions(assignees: [owner]);
   }
@@ -60,10 +62,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  final TextEditingController reportTitle = TextEditingController();
-  final TextEditingController reportBody = TextEditingController();
-  final GlobalKey<FormState> reportFormKey = GlobalKey<FormState>();
-  final ValueNotifier reportLoading = ValueNotifier(false);
   void _incrementCounter() {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (BuildContext context) {
@@ -96,7 +94,11 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
               onPressed: () {
-                _reporteIssueOrSuggestion(context);
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) {
+                    return Reports();
+                  },
+                ));
               },
               icon: const Icon(Icons.report))
         ],
@@ -134,100 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-
-  Future<dynamic> _reporteIssueOrSuggestion(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            scrollable: true,
-            title: const Text("Report Issue or suggestion"),
-            content: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Form(
-                key: reportFormKey,
-                child: Column(
-                  children: <Widget>[
-                    TextFormField(
-                      validator: (String? text) {
-                        if (reportTitle.text.isEmpty) {
-                          return "Empty title";
-                        }
-                        return null;
-                      },
-                      controller: reportTitle,
-                      decoration: const InputDecoration(
-                        labelText: 'Title',
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        icon: Icon(Icons.account_box),
-                      ),
-                    ),
-                    TextFormField(
-                      controller: reportBody,
-                      maxLines: 15,
-                      validator: (String? text) {
-                        if (text!.isEmpty) {
-                          return "Empty description";
-                        }
-                        return null;
-                      },
-                      decoration: const InputDecoration(
-                        labelText: "Description",
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        icon: Icon(Icons.email),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              ValueListenableBuilder(
-                  valueListenable: reportLoading,
-                  builder: (context, _, __) {
-                    return reportLoading.value
-                        ? const SizedBox(
-                            height: 20.0,
-                            width: 20.0,
-                            child: CircularProgressIndicator())
-                        : ElevatedButton(
-                            child: const Text(
-                              "Report",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            onPressed: () async {
-                              // Report issues or suggestions from app users
-                              await _report(context);
-                              // your code
-                            });
-                  })
-            ],
-          );
-        });
-  }
-
-  Future<void> _report(BuildContext context) async {
-    bool isValid = reportFormKey.currentState!.validate();
-    if (isValid) {
-      reportLoading.value = true;
-      bool sended = await GhSnitch.report(
-          labels: ["from user"],
-          assignees: [const String.fromEnvironment('owner')],
-          title: reportTitle.text,
-          body: reportBody.text);
-      reportLoading.value = false;
-      if (sended) {
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pop();
-      } else {
-        const snackBar = SnackBar(
-          content: Text("Somthing wrong, try later"),
-        );
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
-    }
   }
 }
 
