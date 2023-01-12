@@ -24,7 +24,9 @@ and the Flutter guide for
 - Support offline case (save locally & send later when connection exist)
 
 ## TODO
-- [ ] Fetch issue comments & give user to discuss his issue/proposal from app with repo contributors
+- [x] Fetch issue comments & give user to discuss his issue/proposal from app with repo contributors
+- [ ] Fetch PR's & give user to discuss his new feature from app with repo contributors
+- [ ] Create Custom screens for Issues/PR's & screen for user to chat & discuss by comments
 
 💡 Feel free to add any idea 
 
