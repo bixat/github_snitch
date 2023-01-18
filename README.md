@@ -22,6 +22,8 @@ and the Flutter guide for
   - Automaticlly when call `listenToExceptions` method in `main` as in example
   - Manually with `report` method
 - Support offline case (save locally & send later when connection exist)
+- Support get issue reported with all comments
+- Support submit comments from user and reply from github issues by repo owners
 
 ## TODO
 - [x] Fetch issue comments & give user to discuss his issue/proposal from app with repo contributors
