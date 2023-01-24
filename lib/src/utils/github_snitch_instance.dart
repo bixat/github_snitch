@@ -152,13 +152,10 @@ class GhSnitchInstance {
     bool issueNotFromPackage = !stack.toString().contains("github_snitch");
     if (issueNotFromPackage) {
       String body = stack.toString();
-      if (body.contains("#10")) {
-        body = body.substring(0, stack.toString().indexOf("#10"));
-      }
       return report(
           title: exception.toString(),
           labels: [label, bugLabel],
-          body: "**$exception**\n\n```$body```",
+          body: "```$body```",
           milestone: milestone,
           assignees: assignees);
     }
