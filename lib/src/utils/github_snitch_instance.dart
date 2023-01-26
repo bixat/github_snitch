@@ -155,7 +155,7 @@ class GhSnitchInstance {
       return report(
           title: exception.toString(),
           labels: [label, bugLabel],
-          body: "```$body```",
+          body: "```\n$body ```",
           milestone: milestone,
           assignees: assignees);
     }
