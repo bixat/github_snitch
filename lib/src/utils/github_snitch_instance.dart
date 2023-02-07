@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:client_information/client_information.dart';
 import 'package:flutter/foundation.dart';
 import 'package:github_snitch/src/utils/compare.dart';
+import 'package:universal_io/io.dart';
 
 import '../models/comment.dart';
 import '../models/issue.dart';
@@ -24,6 +24,8 @@ class GhSnitchInstance {
   Future<bool> report(
       {required String title,
       required String body,
+      String? screenShot,
+      String? screenShotsBranch,
       List<String>? labels,
       List<String>? assignees,
       int? milestone}) async {
@@ -38,11 +40,17 @@ class GhSnitchInstance {
       String issueEndpoint = "$owner/$repo/issues";
       bool notCreated = await issueIsNew(body, issueEndpoint);
       if (notCreated) {
+        String? url = "";
+        if (screenShot != null) {
+          url = await uploadScreenShot(screenShot,
+              screenShotsBranch: screenShotsBranch!);
+          url = "\n## ScreenShot \n![]($url)";
+        }
         Map<String, dynamic> issueBody = {
           ownerBody: owner,
           repoBody: repo,
           bodyTitle: title,
-          bodyBody: body,
+          bodyBody: body + url,
         };
         if (assignees != null) {
           issueBody["assignees"] = assignees;
@@ -90,7 +98,7 @@ class GhSnitchInstance {
     }
   }
 
-  reportSavedIssues() async {
+  void reportSavedIssues() async {
     List prefsKeys = (await Prefs.getKeys()).toList();
     List olderIssues =
         prefsKeys.where((e) => e.contains("github_report_issue")).toList();
@@ -246,6 +254,29 @@ class GhSnitchInstance {
       commented = false;
     }
     return commented;
+  }
+
+  Future<String?> uploadScreenShot(String imgPath,
+      {String screenShotsBranch = "GhSnitch_ScreenShots"}) async {
+    Uint8List file = File(imgPath).readAsBytesSync();
+    String content = base64.encode(file);
+    String fileName = imgPath.split("/").last;
+    String uploadImgEp = "$owner/$repo/contents/$fileName";
+    var data = json.encode({
+      "message": "uploaded screenshot by GhSnitch package",
+      "content": content,
+      "branch": screenShotsBranch
+    });
+
+    GhResponse response = await ghRequest.request("PUT", uploadImgEp, data);
+    if (response.statusCode == 201) {
+      log("✅ Image uploaded");
+      return response.response["content"]["download_url"];
+    } else {
+      log("❌ Echec to Upload image");
+      log(response.response.toString());
+    }
+    return null;
   }
 
   Future get isConnected async {
