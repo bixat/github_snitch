@@ -24,11 +24,13 @@ and the Flutter guide for
 - Support offline case (save locally & send later when connection exist)
 - Support get issue reported with all comments
 - Support submit comments from user and reply from github issues by repo owners
+- Support include screenshots on report
 
 ## TODO
 - [x] Fetch issue comments & give user to discuss his issue/proposal from app with repo contributors
 - [ ] Fetch PR's & give user to discuss his new feature from app with repo contributors
 - [ ] Create Custom screens for Issues/PR's & screen for user to chat & discuss by comments
+- [x] Include screen shot on report
 
 💡 Feel free to add any idea 
 
@@ -61,7 +63,10 @@ WidgetsFlutterBinding.ensureInitialized();
   }
   runApp(const MyApp());
 ```
-For report issues Manually (from users) check _report method on [`example`](example/lib/main.dart)
+
+* For report issues Manually (from users) check _report method on [`example`](example/lib/main.dart)
+
+* For screenshots you need to create new branch `GhSnitch_ScreenShots` for save screenshots
 
 If you want to test it in debug mode you can remove ReleaseMode condition
 
