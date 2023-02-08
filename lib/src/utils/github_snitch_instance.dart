@@ -271,7 +271,9 @@ class GhSnitchInstance {
     GhResponse response = await ghRequest.request("PUT", uploadImgEp, data);
     if (response.statusCode == 201) {
       log("✅ Screenshot uploaded");
-      return response.response["content"]["download_url"];
+      return response.response["content"]["html_url"]
+          .toString()
+          .replaceFirst("$repo/blob/", "$repo/raw/");
     } else {
       log("❌ Echec to Upload Screenshot");
       log(response.response.toString());
