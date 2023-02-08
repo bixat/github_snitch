@@ -66,7 +66,7 @@ WidgetsFlutterBinding.ensureInitialized();
 
 * For report issues Manually (from users) check _report method on [`example`](example/lib/main.dart)
 
-* For screenshots you need to create new branch `GhSnitch_ScreenShots` for save screenshots
+* For screenshots you need to create new branch `GhSnitch_ScreenShots` for save screenshots you can change default branch from `screenShotsBranch` report parameter
 
 If you want to test it in debug mode you can remove ReleaseMode condition
 
