@@ -127,7 +127,7 @@ class GhSnitchInstance {
     } else {
       ghRequest = GhRequest(token);
       reportSavedIssues();
-      log("✅ GhSnitch initialized $repo");
+      log("✅ GhSnitch initialized");
     }
   }
 
