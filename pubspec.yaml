@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   http: ^0.13.5
   shared_preferences: ^2.0.15
+  universal_io: ^2.0.4
   
 
 dev_dependencies:

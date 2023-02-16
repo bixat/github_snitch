@@ -27,6 +27,8 @@ class GhSnitch {
   static Future<bool> report(
       {required String title,
       required String body,
+      String? screenShot,
+      String? screenShotBranch,
       List<String>? labels,
       List<String>? assignees,
       int? milestone}) {
@@ -34,6 +36,8 @@ class GhSnitch {
     return _instance.report(
         title: title,
         body: body,
+        screenShot: screenShot,
+        screenShotsBranch: screenShotBranch,
         labels: labels,
         assignees: assignees,
         milestone: milestone);
