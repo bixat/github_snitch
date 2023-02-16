@@ -8,3 +8,9 @@
 	- GhSnitch-internal for Errors caught by Flutter Framework
 	- Reported by GhSnitch Package for know which issues reported from this package
 * Support offline case (save locally & send later when connection exist)
+
+## 0.0.4
+
+* Fixed show all stack issue
+* Support include screenshots on report
+* Used fine-grained personal access token instead of PAT
