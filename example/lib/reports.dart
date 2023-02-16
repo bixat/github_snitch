@@ -274,7 +274,7 @@ class IssueComments extends StatelessWidget {
                               commentController.clear();
                             } else {}
                           } else {
-                            //TODO
+                            //TODO: handle else
                           }
                         },
                         backgroundColor: Colors.blue,
