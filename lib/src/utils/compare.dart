@@ -11,6 +11,5 @@ double compare(String txt1, String txt2) {
   }
   double n = (splitTxt1.toSet().length + splitTxt2.toSet().length) / 2;
   double percent = (result.toSet().length * 100) / n;
-  print(percent.toString());
   return percent;
 }
