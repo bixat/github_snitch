@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:github_snitch/github_snitch.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Reports extends StatelessWidget {
   Reports({super.key});
@@ -7,7 +8,6 @@ class Reports extends StatelessWidget {
   final TextEditingController reportBody = TextEditingController();
   final GlobalKey<FormState> reportFormKey = GlobalKey<FormState>();
   final ValueNotifier reportLoading = ValueNotifier(false);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,6 +59,7 @@ class Reports extends StatelessWidget {
   }
 
   Future<dynamic> _reporteIssueOrSuggestion(BuildContext context) {
+    String? path;
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -100,6 +101,15 @@ class Reports extends StatelessWidget {
                         icon: Icon(Icons.email),
                       ),
                     ),
+                    IconButton(
+                        onPressed: () async {
+                          final ImagePicker picker = ImagePicker();
+                          // Pick an image
+                          final XFile? image = await picker.pickImage(
+                              source: ImageSource.gallery);
+                          path = image!.path;
+                        },
+                        icon: const Icon(Icons.add_a_photo))
                   ],
                 ),
               ),
@@ -120,7 +130,7 @@ class Reports extends StatelessWidget {
                             ),
                             onPressed: () async {
                               // Report issues or suggestions from app users
-                              await _report(context);
+                              await _report(context, path);
                               // your code
                             });
                   })
@@ -129,7 +139,7 @@ class Reports extends StatelessWidget {
         });
   }
 
-  Future<void> _report(BuildContext context) async {
+  Future<void> _report(BuildContext context, String? path) async {
     bool isValid = reportFormKey.currentState!.validate();
     if (isValid) {
       reportLoading.value = true;
@@ -137,7 +147,9 @@ class Reports extends StatelessWidget {
           labels: ["from user"],
           assignees: [const String.fromEnvironment('owner')],
           title: reportTitle.text,
-          body: reportBody.text);
+          body: reportBody.text,
+          screenShotBranch: "develop",
+          screenShot: path);
       reportLoading.value = false;
       if (sended) {
         // ignore: use_build_context_synchronously
@@ -262,7 +274,7 @@ class IssueComments extends StatelessWidget {
                               commentController.clear();
                             } else {}
                           } else {
-                            //TODO
+                            //TODO: handle else
                           }
                         },
                         backgroundColor: Colors.blue,
