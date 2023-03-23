@@ -31,12 +31,6 @@ class GhSnitchInstance {
       int? milestone}) async {
     bool connected = await isConnected;
     if (connected) {
-      await createLabel(externalIssueLabel,
-          "Errors not caught by Flutter Framework", "f0c2dd");
-      await createLabel(
-          internalIssueLabel, "Errors caught by Flutter Framework", "6a4561");
-      await createLabel(fromGhRSnitchPackage,
-          "Errors caught by Github Snitch package", "970206");
       String issueEndpoint = "$owner/$repo/issues";
       bool notCreated = await issueIsNew(body, issueEndpoint);
       if (notCreated) {
@@ -171,32 +165,6 @@ class GhSnitchInstance {
           assignees: assignees);
     }
     return Future.value(false);
-  }
-
-  Future<void> createLabel(
-      String label, String description, String color) async {
-    bool labelNotCreated = !(await Prefs.checkIfExist(label));
-    if (labelNotCreated) {
-      String labelEndpoint = "$owner/$repo/labels";
-      Map labelBody = {
-        "name": label,
-        "description": description,
-        "color": color
-      };
-      String labelBodyToString = json.encode(labelBody);
-      GhResponse response =
-          await ghRequest.request("POST", labelEndpoint, labelBodyToString);
-      if (response.statusCode == 201 ||
-          response.response["errors"][0]["code"] == "already_exists") {
-        log("✅ $label Label Created");
-        Prefs.setLabel(label, true);
-      } else {
-        log("❌ Echec to Create $label Label");
-        log(response.response.toString());
-      }
-    } else {
-      log("✅ $label Label Already Created");
-    }
   }
 
   Future<bool> issueIsNew(String body, String endpoint) async {
