@@ -201,7 +201,7 @@ class IssueComments extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    issue.title! * 20,
+                    issue.title!,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontWeight: FontWeight.w900,
@@ -216,11 +216,11 @@ class IssueComments extends StatelessWidget {
       body: Stack(
         children: <Widget>[
           ListView.builder(
-            itemCount: issue.comments!.multi.length,
+            itemCount: issue.comments.multi.length,
             shrinkWrap: true,
             padding: const EdgeInsets.only(top: 10, bottom: 60),
             itemBuilder: (context, index) {
-              Comment comment = issue.comments!.multi[index];
+              Comment comment = issue.comments.multi[index];
               return CommentWidget(comment: comment);
             },
           ),
