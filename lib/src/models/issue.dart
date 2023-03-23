@@ -7,18 +7,15 @@ const String issueCommentsField = "comments";
 
 class Issue {
   String? id;
-  String? deviceId;
   String? title;
   String? state;
   bool isOpen = false;
-  Comment? comments;
+  Comment comments = Comment();
   List<Issue> multi = [];
 
-  Issue({this.deviceId}) {
-    comments ??= Comment();
-  }
+  Issue();
 
-  void fromJson(Map<String, dynamic> json) {
+  Issue.fromJson(Map<String, dynamic> json) {
     id = json[issueIdField].toString();
     title = json[issueTitleField];
     state = json[issueStateField];
