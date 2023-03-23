@@ -40,11 +40,12 @@ class GhSnitchInstance {
               screenShotsBranch: screenShotsBranch!);
           url = "\n## ScreenShot \n![]($url)";
         }
+        ClientInformation info = await ClientInformation.fetch();
         Map<String, dynamic> issueBody = {
           ownerBody: owner,
           repoBody: repo,
           bodyTitle: title,
-          bodyBody: body + url,
+          bodyBody: '$body$url\n${info.deviceId}',
         };
         if (assignees != null) {
           issueBody["assignees"] = assignees;
@@ -60,8 +61,8 @@ class GhSnitchInstance {
 
         String issueBodyToString = json.encode(issueBody);
 
-        GhResponse response =
-            await ghRequest.request("POST", issueEndpoint, issueBodyToString);
+        GhResponse response = await ghRequest.request("POST", issueEndpoint,
+            body: issueBodyToString);
         if (response.statusCode == 201) {
           Map issueFieldsDecoded = Map.from(response.response);
           issueFieldsDecoded
@@ -169,8 +170,7 @@ class GhSnitchInstance {
 
   Future<bool> issueIsNew(String body, String endpoint) async {
     String params = "?state=all&labels=$fromGhRSnitchPackage";
-    GhResponse ghResponse =
-        await ghRequest.request("GET", endpoint + params, "");
+    GhResponse ghResponse = await ghRequest.request("GET", endpoint + params);
     if (ghResponse.statusCode == 200) {
       bool notExist = true;
       for (var e in (ghResponse.response as List)) {
@@ -184,19 +184,28 @@ class GhSnitchInstance {
     return false;
   }
 
+  Future<List<Issue>> getIssuesByUserID(String userId) async {
+    List<Issue> result = [];
+    String issueEndpoint = "$owner/$repo/issues";
+    GhResponse ghResponse = await ghRequest.request("GET", issueEndpoint);
+    if (ghResponse.statusCode == 200) {
+      for (var e in (ghResponse.response as List)) {
+        if (e["body"].contains(userId)) {
+          result.add(Issue.fromJson(e));
+        }
+      }
+    }
+    return result;
+  }
+
   Future<Issue> getReportsComments() async {
     final Issue issues = Issue();
-    Set<String> keys = await Prefs.getKeys();
-    List issueKeys = keys.where((e) => e.contains("gh_issue_")).toList();
     ClientInformation info = await ClientInformation.fetch();
-    for (var key in issueKeys) {
-      String? issueFields = await Prefs.get(key);
-      var issueFieldsDecoded = json.decode(issueFields!);
-      final Issue issue = Issue(deviceId: info.deviceId);
-      issue.fromJson(issueFieldsDecoded);
+    List userIssues = await getIssuesByUserID(info.deviceId);
+    for (Issue issue in userIssues) {
       String listCommentsEp = "$owner/$repo/issues/${issue.id}/comments";
-      GhResponse response = await ghRequest.request("GET", listCommentsEp, "");
-      issue.comments!.setMulti(response.response);
+      GhResponse response = await ghRequest.request("GET", listCommentsEp);
+      issue.comments.setMulti(response.response);
       issues.multi.add(issue);
     }
     return issues;
@@ -211,8 +220,8 @@ class GhSnitchInstance {
           "$comment\n${deviceIdTemplate.replaceFirst(idMark, info.deviceId)}"
     };
     String commentBodyToString = json.encode(commentBody);
-    GhResponse response =
-        await ghRequest.request("POST", submitCommentEp, commentBodyToString);
+    GhResponse response = await ghRequest.request("POST", submitCommentEp,
+        body: commentBodyToString);
     if (response.statusCode == 201) {
       log("✅ Commented Issue");
       commented = true;
@@ -236,7 +245,8 @@ class GhSnitchInstance {
       "branch": screenShotsBranch
     });
 
-    GhResponse response = await ghRequest.request("PUT", uploadImgEp, data);
+    GhResponse response =
+        await ghRequest.request("PUT", uploadImgEp, body: data);
     if (response.statusCode == 201) {
       log("✅ Screenshot uploaded");
       return response.response["content"]["html_url"]

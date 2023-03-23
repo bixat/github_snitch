@@ -12,11 +12,11 @@ class GhRequest {
   final Map<String, String> headers = {
     "Accept": "application/vnd.github+json",
   };
-  Future request(String method, String endpoint, String body) async {
+  Future request(String method, String endpoint, {String? body}) async {
     headers[HttpHeaders.authorizationHeader] = "Bearer $token";
     Uri url = Uri.parse(baseUrl + endpoint);
     Request request = Request(method, url);
-    request.body = body;
+    request.body = body ?? "";
     request.headers.addAll(headers);
     StreamedResponse response = await request.send();
     var decodeResponse = json.decode(await response.stream.bytesToString());
