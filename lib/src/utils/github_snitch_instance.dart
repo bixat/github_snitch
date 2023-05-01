@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:platform_device_id/platform_device_id.dart';
 
-import 'package:client_information/client_information.dart';
 import 'package:flutter/foundation.dart';
 import 'package:github_snitch/src/utils/compare.dart';
 import 'package:universal_io/io.dart';
@@ -40,12 +40,12 @@ class GhSnitchInstance {
               screenShotsBranch: screenShotsBranch!);
           url = "\n## ScreenShot \n![]($url)";
         }
-        ClientInformation info = await ClientInformation.fetch();
+        String? deviceId = await PlatformDeviceId.getDeviceId;
         Map<String, dynamic> issueBody = {
           ownerBody: owner,
           repoBody: repo,
           bodyTitle: title,
-          bodyBody: '$body$url\n${info.deviceId}',
+          bodyBody: '$body$url\n$deviceId',
         };
         if (assignees != null) {
           issueBody["assignees"] = assignees;
@@ -172,26 +172,31 @@ class GhSnitchInstance {
     String params = "?state=all&labels=$fromGhRSnitchPackage";
     GhResponse ghResponse = await ghRequest.request("GET", endpoint + params);
     if (ghResponse.statusCode == 200) {
-      bool notExist = true;
+      bool isNew = true;
       for (var e in (ghResponse.response as List)) {
         double comparePercent = compare(e[bodyBody], body);
         if (comparePercent >= 80.0) {
-          notExist = false;
+          isNew = false;
         }
       }
-      return notExist;
+      return isNew;
     }
     return false;
   }
 
   Future<List<Issue>> getIssuesByUserID(String userId) async {
+    //TODO: Fix get closed issues issue
+    String params = "?state=all";
     List<Issue> result = [];
     String issueEndpoint = "$owner/$repo/issues";
-    GhResponse ghResponse = await ghRequest.request("GET", issueEndpoint);
+    GhResponse ghResponse =
+        await ghRequest.request("GET", issueEndpoint + params);
     if (ghResponse.statusCode == 200) {
       for (var e in (ghResponse.response as List)) {
-        if (e["body"].contains(userId)) {
-          result.add(Issue.fromJson(e));
+        if (e["body"] != null) {
+          if (e["body"].contains(userId)) {
+            result.add(Issue.fromJson(e));
+          }
         }
       }
     }
@@ -200,8 +205,9 @@ class GhSnitchInstance {
 
   Future<Issue> getReportsComments() async {
     final Issue issues = Issue();
-    ClientInformation info = await ClientInformation.fetch();
-    List userIssues = await getIssuesByUserID(info.deviceId);
+
+    String? deviceId = await PlatformDeviceId.getDeviceId;
+    List userIssues = await getIssuesByUserID(deviceId!);
     for (Issue issue in userIssues) {
       String listCommentsEp = "$owner/$repo/issues/${issue.id}/comments";
       GhResponse response = await ghRequest.request("GET", listCommentsEp);
@@ -214,10 +220,10 @@ class GhSnitchInstance {
   Future<bool> submitComment(String reportId, String comment) async {
     bool commented = false;
     String submitCommentEp = "$owner/$repo/issues/$reportId/comments";
-    ClientInformation info = await ClientInformation.fetch();
+    String? deviceId = await PlatformDeviceId.getDeviceId;
     Map commentBody = {
       commentsBodyField:
-          "$comment\n${deviceIdTemplate.replaceFirst(idMark, info.deviceId)}"
+          "$comment\n${deviceIdTemplate.replaceFirst(idMark, deviceId!)}"
     };
     String commentBodyToString = json.encode(commentBody);
     GhResponse response = await ghRequest.request("POST", submitCommentEp,
