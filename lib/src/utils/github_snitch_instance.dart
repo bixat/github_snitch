@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:platform_device_id/platform_device_id.dart';
+import 'package:flutter_udid/flutter_udid.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:github_snitch/src/utils/compare.dart';
@@ -40,7 +40,7 @@ class GhSnitchInstance {
               screenShotsBranch: screenShotsBranch!);
           url = "\n## ScreenShot \n![]($url)";
         }
-        String? deviceId = await PlatformDeviceId.getDeviceId;
+        String deviceId = await FlutterUdid.udid;
         Map<String, dynamic> issueBody = {
           ownerBody: owner,
           repoBody: repo,
@@ -206,8 +206,8 @@ class GhSnitchInstance {
   Future<Issue> getReportsComments() async {
     final Issue issues = Issue();
 
-    String? deviceId = await PlatformDeviceId.getDeviceId;
-    List userIssues = await getIssuesByUserID(deviceId!);
+    String deviceId = await FlutterUdid.udid;
+    List userIssues = await getIssuesByUserID(deviceId);
     for (Issue issue in userIssues) {
       String listCommentsEp = "$owner/$repo/issues/${issue.id}/comments";
       GhResponse response = await ghRequest.request("GET", listCommentsEp);
@@ -220,10 +220,10 @@ class GhSnitchInstance {
   Future<bool> submitComment(String reportId, String comment) async {
     bool commented = false;
     String submitCommentEp = "$owner/$repo/issues/$reportId/comments";
-    String? deviceId = await PlatformDeviceId.getDeviceId;
+    String deviceId = await FlutterUdid.udid;
     Map commentBody = {
       commentsBodyField:
-          "$comment\n${deviceIdTemplate.replaceFirst(idMark, deviceId!)}"
+          "$comment\n${deviceIdTemplate.replaceFirst(idMark, deviceId)}"
     };
     String commentBodyToString = json.encode(commentBody);
     GhResponse response = await ghRequest.request("POST", submitCommentEp,
