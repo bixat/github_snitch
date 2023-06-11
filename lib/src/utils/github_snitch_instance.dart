@@ -36,7 +36,7 @@ class GhSnitchInstance {
       bool alreadyReported = await isAlreadyReported(body, issueEndpoint);
       if (alreadyReported) {
         log("✅ Issue Already Reported");
-        return true;
+        return false;
       } else {
         String? url = "";
         if (screenShot != null) {
