@@ -1,5 +1,9 @@
 extension RemoveLastLine on String {
   String removeLastLine() {
-    return substring(0, lastIndexOf("\n"));
+    int index = lastIndexOf('\n');
+    if (index != -1) {
+      return substring(0, index);
+    }
+    return this;
   }
 }
