@@ -1,6 +1,6 @@
 name: github_snitch
 description: Package for capture & open github issue for crashes, issues & proposals
-version: 0.0.4
+version: 0.0.6
 homepage: https://github.com/M97Chahboun/github_snitch
 
 environment:
@@ -14,6 +14,7 @@ dependencies:
   http: ^0.13.5
   shared_preferences: ^2.0.15
   universal_io: ^2.0.4
+  string_similarity: ^2.0.0
   
 
 dev_dependencies:
