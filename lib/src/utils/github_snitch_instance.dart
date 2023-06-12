@@ -3,7 +3,8 @@ import 'dart:developer';
 
 import 'package:client_information/client_information.dart';
 import 'package:flutter/foundation.dart';
-import 'package:github_snitch/src/utils/compare.dart';
+import 'package:github_snitch/src/utils/extensions.dart';
+import 'package:string_similarity/string_similarity.dart';
 import 'package:universal_io/io.dart';
 
 import '../models/comment.dart';
@@ -32,8 +33,11 @@ class GhSnitchInstance {
     bool connected = await isConnected;
     if (connected) {
       String issueEndpoint = "$owner/$repo/issues";
-      bool notCreated = await issueIsNew(body, issueEndpoint);
-      if (notCreated) {
+      bool alreadyReported = await isAlreadyReported(body, issueEndpoint);
+      if (alreadyReported) {
+        log("✅ Issue Already Reported");
+        return false;
+      } else {
         String? url = "";
         if (screenShot != null) {
           url = await uploadScreenShot(screenShot,
@@ -77,9 +81,6 @@ class GhSnitchInstance {
           log(response.response.toString());
           return false;
         }
-      } else {
-        log("✅ Issue Already Reported");
-        return true;
       }
     } else {
       Map issue = {
@@ -168,20 +169,21 @@ class GhSnitchInstance {
     return Future.value(false);
   }
 
-  Future<bool> issueIsNew(String body, String endpoint) async {
+  Future<bool> isAlreadyReported(String body, String endpoint) async {
+    bool isAlreadyReported = false;
     String params = "?state=all&labels=$fromGhRSnitchPackage";
     GhResponse ghResponse = await ghRequest.request("GET", endpoint + params);
     if (ghResponse.statusCode == 200) {
-      bool notExist = true;
       for (var e in (ghResponse.response as List)) {
-        double comparePercent = compare(e[bodyBody], body);
-        if (comparePercent >= 80.0) {
-          notExist = false;
+        String removedLastLine = e[bodyBody].toString().removeLastLine();
+        double similarity = body.similarityTo(removedLastLine);
+        if (similarity > 0.7) {
+          isAlreadyReported = true;
+          break;
         }
       }
-      return notExist;
     }
-    return false;
+    return isAlreadyReported;
   }
 
   Future<List<Issue>> getIssuesByUserID(String userId) async {
