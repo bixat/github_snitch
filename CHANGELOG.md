@@ -14,3 +14,13 @@
 * Fixed show all stack issue
 * Support include screenshots on report
 * Used fine-grained personal access token instead of PAT
+
+## 0.0.5
+* Removed createLabels method
+* Add fetch issues from GitHub
+* Added string similarity package for check issue already reported
+## 0.0.6
+
+* Fix removeLastLine extension issue
+* Add string similarity package
+* Update client info package
