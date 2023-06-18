@@ -55,8 +55,8 @@ class GhSnitchInstance {
           issueBody["assignees"] = assignees;
         }
         if (labels != null) {
-          issueBody["labels"] = labels;
           labels.add(fromGhRSnitchPackage);
+          issueBody["labels"] = labels;
         }
 
         if (milestone != null) {
@@ -134,13 +134,21 @@ class GhSnitchInstance {
   }) {
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
-      if (labels != null) labels.add(externalIssueLabel);
+      if (labels != null) {
+        labels!.add(externalIssueLabel);
+      } else {
+        labels = [externalIssueLabel];
+      }
       prepareAndReport(details.exception.toString(), details.stack!,
           labels: labels, assignees: assignees, milestone: milestone);
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      if (labels != null) labels.add(internalIssueLabel);
+      if (labels != null) {
+        labels!.add(internalIssueLabel);
+      } else {
+        labels = [internalIssueLabel];
+      }
       prepareAndReport(error.toString(), stack,
           labels: labels, assignees: assignees, milestone: milestone);
       return true;
