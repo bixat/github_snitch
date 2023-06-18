@@ -13,7 +13,7 @@ Future<void> main() async {
 
   if (kReleaseMode) {
     // For report exceptions & bugs Automaticlly
-    GhSnitch.listenToExceptions(assignees: [owner]);
+    GhSnitch.listenToExceptions(assignees: [owner], labels: ['flavorX']);
   }
   runApp(const MyApp());
 }
