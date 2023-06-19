@@ -22,6 +22,10 @@ class GhSnitchInstance {
   static GhSnitchInstance get instance => GhSnitchInstance();
   bool get initialized => token != null && repo != null && owner != null;
 
+  /// Reports an issue to the GitHub repository. It takes a `title` and `body` as required parameters,
+  /// and optional parameters such as `screenShot`, `screenShotsBranch`, `labels`, `assignees`, and `milestone`.
+  /// The method first checks if the issue has already been reported, and if not, it creates a new issue in the repository
+  /// and saves its details in the app's preferences.
   Future<bool> report(
       {required String title,
       required String body,
@@ -94,6 +98,8 @@ class GhSnitchInstance {
     }
   }
 
+  /// Reports any issues that were saved in the app's preferences when the app was offline.
+  /// It retrieves the saved issues, reports them to the repository, and removes them from the preferences.
   void reportSavedIssues() async {
     List prefsKeys = (await Prefs.getKeys()).toList();
     List olderIssues =
@@ -113,6 +119,8 @@ class GhSnitchInstance {
     }
   }
 
+  /// Initializes the `GhSnitchInstance` by setting the `token`, `owner`, and `repo` properties.
+  /// It also creates a `GhRequest` object using the `token` property and calls the `reportSavedIssues` method.
   void initialize(
       {required String token, required String owner, required String repo}) {
     this.token = token;
@@ -127,6 +135,8 @@ class GhSnitchInstance {
     }
   }
 
+  /// Listens to any uncaught exceptions in the app and reports them to the repository.
+  /// It takes optional parameters such as `assignees` and `milestone`.
   void listenToExceptions({
     List<String>? assignees,
     int? milestone,
@@ -156,6 +166,8 @@ class GhSnitchInstance {
     log("✅ GhSnitch Listen to exceptions");
   }
 
+  /// Prepares and reports an exception to the repository. It takes the `exception`, `stack`, and `label` as required parameters,
+  /// and optional parameters such as `assignees` and `milestone`.
   Future<bool> prepareAndReport(
     String exception,
     StackTrace stack, {
@@ -179,6 +191,8 @@ class GhSnitchInstance {
     return Future.value(false);
   }
 
+  /// Checks if an issue with a similar `body` has already been reported in the repository.
+  /// It takes the `body` and `endpoint` as required parameters.
   Future<bool> isAlreadyReported(String body, String endpoint) async {
     bool isAlreadyReported = false;
     String params = "?state=all&labels=$fromGhRSnitchPackage";
@@ -196,6 +210,7 @@ class GhSnitchInstance {
     return isAlreadyReported;
   }
 
+  /// Retrieves all the issues in the repository that contain the specified `userId`.
   Future<List<Issue>> getIssuesByUserID(String userId) async {
     //TODO: Fix get closed issues issue
     String params = "?state=all";
@@ -215,6 +230,7 @@ class GhSnitchInstance {
     return result;
   }
 
+  /// Retrieves all the comments made on the issues reported by the current user.
   Future<Issue> getReportsComments() async {
     final Issue issues = Issue();
 
@@ -229,6 +245,7 @@ class GhSnitchInstance {
     return issues;
   }
 
+  /// Submits a comment to the specified issue.
   Future<bool> submitComment(String reportId, String comment) async {
     bool commented = false;
     String submitCommentEp = "$owner/$repo/issues/$reportId/comments";
@@ -251,6 +268,8 @@ class GhSnitchInstance {
     return commented;
   }
 
+  /// Uploads a screenshot image to the repository.
+  /// It takes the `imgPath` and optional `screenShotsBranch` as parameters.
   Future<String?> uploadScreenShot(String imgPath,
       {String screenShotsBranch = "GhSnitch_ScreenShots"}) async {
     Uint8List file = File(imgPath).readAsBytesSync();
@@ -277,7 +296,9 @@ class GhSnitchInstance {
     return null;
   }
 
+  /// Checks if the device is connected to the internet.
   Future get isConnected async {
+    // TODO: use package for check network
     try {
       final result = await InternetAddress.lookup('example.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {

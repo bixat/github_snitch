@@ -27,3 +27,4 @@
 
 ## 0.0.7
 * Added labels arg to listenToExceptions method
+* Added documentations
