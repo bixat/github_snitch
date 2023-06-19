@@ -24,3 +24,6 @@
 * Fix removeLastLine extension issue
 * Add string similarity package
 * Update client info package
+
+## 0.0.7
+* Added documentations
