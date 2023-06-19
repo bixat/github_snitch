@@ -59,8 +59,8 @@ class GhSnitchInstance {
           issueBody["assignees"] = assignees;
         }
         if (labels != null) {
-          issueBody["labels"] = labels;
           labels.add(fromGhRSnitchPackage);
+          issueBody["labels"] = labels;
         }
 
         if (milestone != null) {
@@ -140,17 +140,27 @@ class GhSnitchInstance {
   void listenToExceptions({
     List<String>? assignees,
     int? milestone,
+    List<String>? labels,
   }) {
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
-      prepareAndReport(
-          details.exception.toString(), details.stack!, externalIssueLabel,
-          assignees: assignees, milestone: milestone);
+      if (labels != null) {
+        labels!.add(externalIssueLabel);
+      } else {
+        labels = [externalIssueLabel];
+      }
+      prepareAndReport(details.exception.toString(), details.stack!,
+          labels: labels, assignees: assignees, milestone: milestone);
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      prepareAndReport(error.toString(), stack, internalIssueLabel,
-          assignees: assignees, milestone: milestone);
+      if (labels != null) {
+        labels!.add(internalIssueLabel);
+      } else {
+        labels = [internalIssueLabel];
+      }
+      prepareAndReport(error.toString(), stack,
+          labels: labels, assignees: assignees, milestone: milestone);
       return true;
     };
     log("✅ GhSnitch Listen to exceptions");
@@ -160,8 +170,8 @@ class GhSnitchInstance {
   /// and optional parameters such as `assignees` and `milestone`.
   Future<bool> prepareAndReport(
     String exception,
-    StackTrace stack,
-    String label, {
+    StackTrace stack, {
+    List<String>? labels,
     List<String>? assignees,
     int? milestone,
   }) {
@@ -173,7 +183,7 @@ class GhSnitchInstance {
       }
       return report(
           title: exception.toString(),
-          labels: [label, bugLabel],
+          labels: labels,
           body: "```\n$body ```",
           milestone: milestone,
           assignees: assignees);

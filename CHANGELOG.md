@@ -26,4 +26,7 @@
 * Update client info package
 
 ## 0.0.7
+* Added labels arg to listenToExceptions method
+
+## 0.0.8
 * Added documentations

@@ -15,7 +15,7 @@ class GhSnitch {
   static GhSnitchInstance get _instance {
     return _ghSnitchDelegate ??= GhSnitchInstance.instance;
   }
-
+  
   /// Listens to exceptions thrown in the app and reports them as issues on GitHub.
   ///
   /// This method sets up a Flutter error handler to catch uncaught exceptions and report them as issues on GitHub.
@@ -30,9 +30,11 @@ class GhSnitch {
   /// ```
   /// GhSnitch.listenToExceptions(assignees: ['username1', 'username2'], milestone: 1);
   /// ```
-  static void listenToExceptions({List<String>? assignees, int? milestone}) {
+  static void listenToExceptions(
+      {List<String>? assignees, int? milestone, List<String>? labels}) {
     _handleNotInitialized();
-    _instance.listenToExceptions(milestone: milestone, assignees: assignees);
+    _instance.listenToExceptions(
+        milestone: milestone, assignees: assignees, labels: labels);
   }
 
   /// Initializes the `GhSnitch` instance with a GitHub token, owner of the repository, and the repository name.
