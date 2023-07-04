@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_udid/flutter_udid.dart';
 
 import 'package:flutter/foundation.dart';
@@ -34,8 +35,8 @@ class GhSnitchInstance {
       List<String>? labels,
       List<String>? assignees,
       int? milestone}) async {
-    bool connected = await isConnected;
-    if (connected) {
+    ConnectivityResult connectivity = await Connectivity().checkConnectivity();
+    if (!(connectivity == ConnectivityResult.none)) {
       String issueEndpoint = "$owner/$repo/issues";
       bool alreadyReported = await isAlreadyReported(body, issueEndpoint);
       if (alreadyReported) {
@@ -294,18 +295,5 @@ class GhSnitchInstance {
       log(response.response.toString());
     }
     return null;
-  }
-
-  /// Checks if the device is connected to the internet.
-  Future get isConnected async {
-    // TODO: use package for check network
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        return true;
-      }
-    } on SocketException catch (_) {
-      return false;
-    }
   }
 }
