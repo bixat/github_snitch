@@ -4,6 +4,20 @@ Sure, here you go:
 
 GitHub Snitch is a Flutter package that helps you report bugs and issues on GitHub automatically. It can also be used to submit comments on existing issues.
 
+## Features
+- Report bugs on GitHub issues with specific labels, assignees, and milestones
+  - Automatically when calling the `listenToExceptions` method in `main` as shown in the example
+  - Manually with the `report` method
+- Support offline cases (save locally and send later when a connection exists)
+- Get reported issues with all comments
+- Submit comments from the user and reply from GitHub issues by repository owners
+- Include screenshots in the report for better issue clarification.
+- Create follow labels for package
+	- GhSnitch-external for Errors not caught by Flutter Framework
+	- GhSnitch-internal for Errors caught by Flutter Framework
+  - Reported by GhSnitch Package for knowing which issues are reported from this package
+
+
 ## Getting Started
 
 After install package you need to generate [fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) choose fine-grained personal access token & select your repo & from Repository permissions check Issues
