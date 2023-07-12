@@ -6,7 +6,7 @@ GitHub Snitch is a Flutter package that helps you report bugs and issues on GitH
 
 ## Getting Started
 
-After install package you need to generate [fine-grained personal access token<](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) choose fine-grained personal access token & select your repo & from Repository permissions check Issues
+After install package you need to generate [fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) choose fine-grained personal access token & select your repo & from Repository permissions check Issues
 Access: Read and write.
 
 We need also `owner username` & `repo name`
