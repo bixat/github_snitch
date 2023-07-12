@@ -30,3 +30,7 @@
 
 ## 0.0.8
 * Added documentations
+
+## 0.0.9
+* Use connectivity package for check network
+* Update readme
