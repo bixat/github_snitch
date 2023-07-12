@@ -68,7 +68,7 @@ The `report` method takes the following parameters:
 * `title`: The title of the issue.
 * `body`: The body of the issue.
 * `screenShot`: The URL of the screenshot.
-* `screenShotBranch`: The branch of the repository where the screenshot is located.
+* `screenShotBranch`: parameter specifies the branch of the repository where the screenshot will be saved.
 * `labels`: A list of labels for the issue.
 * `assignees`: A list of users to assign the issue to.
 * `milestone`: The milestone to associate the issue with.
