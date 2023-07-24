@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_udid/flutter_udid.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:github_snitch/src/utils/extensions.dart';
@@ -49,12 +49,12 @@ class GhSnitchInstance {
               screenShotsBranch: screenShotsBranch!);
           url = "\n## ScreenShot \n![]($url)";
         }
-        String deviceId = await FlutterUdid.udid;
+        String? id = await deviceId;
         Map<String, dynamic> issueBody = {
           ownerBody: owner,
           repoBody: repo,
           bodyTitle: title,
-          bodyBody: '$body$url\n$deviceId',
+          bodyBody: '$body$url\n$id',
         };
         if (assignees != null) {
           issueBody["assignees"] = assignees;
@@ -235,8 +235,8 @@ class GhSnitchInstance {
   Future<Issue> getReportsComments() async {
     final Issue issues = Issue();
 
-    String deviceId = await FlutterUdid.udid;
-    List userIssues = await getIssuesByUserID(deviceId);
+    String? id = await deviceId;
+    List userIssues = await getIssuesByUserID(id ?? '');
     for (Issue issue in userIssues) {
       String listCommentsEp = "$owner/$repo/issues/${issue.id}/comments";
       GhResponse response = await ghRequest.request("GET", listCommentsEp);
@@ -250,10 +250,10 @@ class GhSnitchInstance {
   Future<bool> submitComment(String reportId, String comment) async {
     bool commented = false;
     String submitCommentEp = "$owner/$repo/issues/$reportId/comments";
-    String deviceId = await FlutterUdid.udid;
+    String? id = await deviceId;
     Map commentBody = {
       commentsBodyField:
-          "$comment\n${deviceIdTemplate.replaceFirst(idMark, deviceId)}"
+          "$comment\n${deviceIdTemplate.replaceFirst(idMark, id ?? '')}"
     };
     String commentBodyToString = json.encode(commentBody);
     GhResponse response = await ghRequest.request("POST", submitCommentEp,
@@ -295,5 +295,24 @@ class GhSnitchInstance {
       log(response.response.toString());
     }
     return null;
+  }
+
+  Future<String?> get deviceId async {
+    final deviceInfoPlugin = DeviceInfoPlugin();
+    String? id;
+    if (kIsWeb) {
+      id = (await deviceInfoPlugin.webBrowserInfo).data.hashCode.toString();
+    } else {
+      id = switch (defaultTargetPlatform) {
+        TargetPlatform.android => (await deviceInfoPlugin.androidInfo).id,
+        TargetPlatform.iOS =>
+          (await deviceInfoPlugin.iosInfo).identifierForVendor,
+        TargetPlatform.linux => (await deviceInfoPlugin.linuxInfo).id,
+        TargetPlatform.windows => (await deviceInfoPlugin.windowsInfo).deviceId,
+        TargetPlatform.macOS => (await deviceInfoPlugin.macOsInfo).systemGUID,
+        TargetPlatform.fuchsia => null
+      };
+    }
+    return id;
   }
 }
