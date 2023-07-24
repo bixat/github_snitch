@@ -34,7 +34,8 @@ class GhSnitchInstance {
       String? screenShotsBranch,
       List<String>? labels,
       List<String>? assignees,
-      int? milestone}) async {
+      int? milestone,
+      bool fromCatch = false}) async {
     ConnectivityResult connectivity = await Connectivity().checkConnectivity();
     if (!(connectivity == ConnectivityResult.none)) {
       String issueEndpoint = "$owner/$repo/issues";
@@ -88,9 +89,14 @@ class GhSnitchInstance {
         }
       }
     } else {
+      if (fromCatch) {
+        return false;
+      }
       Map issue = {
         bodyTitle: title,
         bodyBody: body,
+        issueLabelsField: labels,
+        issueFieldMilstone: milestone,
         dateBody: DateTime.now().toUtc().toString()
       };
       String issueToString = json.encode(issue);
@@ -109,9 +115,13 @@ class GhSnitchInstance {
       for (var e in olderIssues) {
         String? issueFromPref = await Prefs.get(e);
         var issueToMap = json.decode(issueFromPref!);
+        Issue issue = Issue.fromJson(issueToMap);
         bool reported = await report(
-            title: issueToMap[bodyTitle],
-            body: issueToMap[bodyBody] + "/n" + issueToMap[dateBody]);
+            title: issue.title!,
+            milestone: issue.milestone,
+            labels: issue.labels,
+            body: "${issue.body!}\n${issueToMap[dateBody]}",
+            fromCatch: true);
         if (reported) {
           Prefs.remove(e);
           log("✅ Reported saved issue");
