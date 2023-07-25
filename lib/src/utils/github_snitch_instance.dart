@@ -301,7 +301,7 @@ class GhSnitchInstance {
     final deviceInfoPlugin = DeviceInfoPlugin();
     String? id;
     if (kIsWeb) {
-      id = (await deviceInfoPlugin.webBrowserInfo).data.hashCode.toString();
+      id = (await deviceInfoPlugin.webBrowserInfo).userAgent.hashCode.toString();
     } else {
       id = switch (defaultTargetPlatform) {
         TargetPlatform.android => (await deviceInfoPlugin.androidInfo).id,
