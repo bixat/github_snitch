@@ -34,7 +34,8 @@ class GhSnitchInstance {
       String? screenShotsBranch,
       List<String>? labels,
       List<String>? assignees,
-      int? milestone}) async {
+      int? milestone,
+      String? userId}) async {
     ConnectivityResult connectivity = await Connectivity().checkConnectivity();
     if (!(connectivity == ConnectivityResult.none)) {
       String issueEndpoint = "$owner/$repo/issues";
@@ -49,7 +50,7 @@ class GhSnitchInstance {
               screenShotsBranch: screenShotsBranch!);
           url = "\n## ScreenShot \n![]($url)";
         }
-        String? id = await deviceId;
+        String? id = userId ?? await deviceId;
         Map<String, dynamic> issueBody = {
           ownerBody: owner,
           repoBody: repo,
@@ -232,10 +233,10 @@ class GhSnitchInstance {
   }
 
   /// Retrieves all the comments made on the issues reported by the current user.
-  Future<Issue> getReportsComments() async {
+  Future<Issue> getReportsComments({String? userId}) async {
     final Issue issues = Issue();
 
-    String? id = await deviceId;
+    String? id = userId ?? await deviceId;
     List userIssues = await getIssuesByUserID(id ?? '');
     for (Issue issue in userIssues) {
       String listCommentsEp = "$owner/$repo/issues/${issue.id}/comments";
@@ -247,10 +248,11 @@ class GhSnitchInstance {
   }
 
   /// Submits a comment to the specified issue.
-  Future<bool> submitComment(String reportId, String comment) async {
+  Future<bool> submitComment(String reportId, String comment,
+      {String? userId}) async {
     bool commented = false;
     String submitCommentEp = "$owner/$repo/issues/$reportId/comments";
-    String? id = await deviceId;
+    String? id = userId ?? await deviceId;
     Map commentBody = {
       commentsBodyField:
           "$comment\n${deviceIdTemplate.replaceFirst(idMark, id ?? '')}"
@@ -301,7 +303,8 @@ class GhSnitchInstance {
     final deviceInfoPlugin = DeviceInfoPlugin();
     String? id;
     if (kIsWeb) {
-      id = (await deviceInfoPlugin.webBrowserInfo).userAgent.hashCode.toString();
+      id =
+          (await deviceInfoPlugin.webBrowserInfo).userAgent.hashCode.toString();
     } else {
       id = switch (defaultTargetPlatform) {
         TargetPlatform.android => (await deviceInfoPlugin.androidInfo).id,
