@@ -34,3 +34,8 @@
 ## 0.0.9
 * Use connectivity package for check network
 * Update readme
+
+## 0.0.10
+* Use connectivity package for check network
+* Configured saved issues report
+* Use device info plus package for support all platform

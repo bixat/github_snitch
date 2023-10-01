@@ -15,7 +15,7 @@ class GhSnitch {
   static GhSnitchInstance get _instance {
     return _ghSnitchDelegate ??= GhSnitchInstance.instance;
   }
-  
+
   /// Listens to exceptions thrown in the app and reports them as issues on GitHub.
   ///
   /// This method sets up a Flutter error handler to catch uncaught exceptions and report them as issues on GitHub.
@@ -69,7 +69,8 @@ class GhSnitch {
       String? screenShotBranch,
       List<String>? labels,
       List<String>? assignees,
-      int? milestone}) {
+      int? milestone,
+      String? userId}) {
     _handleNotInitialized();
     return _instance.report(
         title: title,
@@ -78,7 +79,8 @@ class GhSnitch {
         screenShotsBranch: screenShotBranch,
         labels: labels,
         assignees: assignees,
-        milestone: milestone);
+        milestone: milestone,
+        userId: userId);
   }
 
   /// Checks if the `GhSnitch` instance has been initialized or not.
