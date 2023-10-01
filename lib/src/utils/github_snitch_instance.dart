@@ -42,7 +42,7 @@ class GhSnitchInstance {
       bool alreadyReported = await isAlreadyReported(body, issueEndpoint);
       if (alreadyReported) {
         log("✅ Issue Already Reported");
-        return false;
+        return true;
       } else {
         String? url = "";
         if (screenShot != null) {
@@ -122,7 +122,7 @@ class GhSnitchInstance {
             labels: issue.labels,
             body: "${issue.body!}\n${issueToMap[dateBody]}",
             fromCatch: true);
-        if (reported) {
+                if (reported) {
           Prefs.remove(e);
           log("✅ Reported saved issue");
         }
