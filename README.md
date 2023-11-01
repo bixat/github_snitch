@@ -60,6 +60,7 @@ GhSnitch.report(
   labels: <List<String>?>,
   assignees: <List<String>?>,
   milestone: <int?>,
+  userId: '<user-id if exist if not package will use deviceID>',
 );
 ```
 
