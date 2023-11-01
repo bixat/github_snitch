@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
-import 'package:client_information/client_information.dart';
 import 'package:flutter/foundation.dart';
-import 'package:github_snitch/src/utils/compare.dart';
+import 'package:github_snitch/src/utils/extensions.dart';
+import 'package:github_snitch/src/utils/get_app_version.dart';
+import 'package:string_similarity/string_similarity.dart';
 import 'package:universal_io/io.dart';
 
 import '../models/comment.dart';
@@ -21,6 +24,10 @@ class GhSnitchInstance {
   static GhSnitchInstance get instance => GhSnitchInstance();
   bool get initialized => token != null && repo != null && owner != null;
 
+  /// Reports an issue to the GitHub repository. It takes a `title` and `body` as required parameters,
+  /// and optional parameters such as `screenShot`, `screenShotsBranch`, `labels`, `assignees`, and `milestone`.
+  /// The method first checks if the issue has already been reported, and if not, it creates a new issue in the repository
+  /// and saves its details in the app's preferences.
   Future<bool> report(
       {required String title,
       required String body,
@@ -28,41 +35,47 @@ class GhSnitchInstance {
       String? screenShotsBranch,
       List<String>? labels,
       List<String>? assignees,
-      int? milestone}) async {
-    bool connected = await isConnected;
-    if (connected) {
+      int? milestone,
+      String? userId,
+      bool fromCatch = false}) async {
+    ConnectivityResult connectivity = await Connectivity().checkConnectivity();
+    if (!(connectivity == ConnectivityResult.none)) {
       String issueEndpoint = "$owner/$repo/issues";
-      bool notCreated = await issueIsNew(body, issueEndpoint);
-      if (notCreated) {
+      bool alreadyReported = await isAlreadyReported(body, issueEndpoint);
+      if (alreadyReported) {
+        log("✅ Issue Already Reported");
+        return true;
+      } else {
         String? url = "";
         if (screenShot != null) {
           url = await uploadScreenShot(screenShot,
               screenShotsBranch: screenShotsBranch!);
           url = "\n## ScreenShot \n![]($url)";
         }
-        ClientInformation info = await ClientInformation.fetch();
+        String? id = userId ?? await deviceId;
         Map<String, dynamic> issueBody = {
           ownerBody: owner,
           repoBody: repo,
           bodyTitle: title,
-          bodyBody: '$body$url\n${info.deviceId}',
+          bodyBody: '$body$url\n$id',
         };
         if (assignees != null) {
           issueBody["assignees"] = assignees;
         }
         if (labels != null) {
-          issueBody["labels"] = labels;
           labels.add(fromGhRSnitchPackage);
+          issueBody["labels"] = labels;
         }
 
-        if (milestone != null) {
-          issueBody["milestone"] = milestone;
-        }
+        milestone ??= await getMilestoneID() ?? await createMilestone();
+        issueBody["milestone"] = milestone;
 
         String issueBodyToString = json.encode(issueBody);
 
         GhResponse response = await ghRequest.request("POST", issueEndpoint,
             body: issueBodyToString);
+        print(milestone);
+        print(response.response);
         if (response.statusCode == 201) {
           Map issueFieldsDecoded = Map.from(response.response);
           issueFieldsDecoded
@@ -77,14 +90,16 @@ class GhSnitchInstance {
           log(response.response.toString());
           return false;
         }
-      } else {
-        log("✅ Issue Already Reported");
-        return true;
       }
     } else {
+      if (fromCatch) {
+        return false;
+      }
       Map issue = {
         bodyTitle: title,
         bodyBody: body,
+        issueLabelsField: labels,
+        issueFieldMilstone: milestone,
         dateBody: DateTime.now().toUtc().toString()
       };
       String issueToString = json.encode(issue);
@@ -93,6 +108,8 @@ class GhSnitchInstance {
     }
   }
 
+  /// Reports any issues that were saved in the app's preferences when the app was offline.
+  /// It retrieves the saved issues, reports them to the repository, and removes them from the preferences.
   void reportSavedIssues() async {
     List prefsKeys = (await Prefs.getKeys()).toList();
     List olderIssues =
@@ -101,9 +118,13 @@ class GhSnitchInstance {
       for (var e in olderIssues) {
         String? issueFromPref = await Prefs.get(e);
         var issueToMap = json.decode(issueFromPref!);
+        Issue issue = Issue.fromJson(issueToMap);
         bool reported = await report(
-            title: issueToMap[bodyTitle],
-            body: issueToMap[bodyBody] + "/n" + issueToMap[dateBody]);
+            title: issue.title!,
+            milestone: issue.milestone,
+            labels: issue.labels,
+            body: "${issue.body!}\n${issueToMap[dateBody]}",
+            fromCatch: true);
         if (reported) {
           Prefs.remove(e);
           log("✅ Reported saved issue");
@@ -112,6 +133,8 @@ class GhSnitchInstance {
     }
   }
 
+  /// Initializes the `GhSnitchInstance` by setting the `token`, `owner`, and `repo` properties.
+  /// It also creates a `GhRequest` object using the `token` property and calls the `reportSavedIssues` method.
   void initialize(
       {required String token, required String owner, required String repo}) {
     this.token = token;
@@ -126,29 +149,43 @@ class GhSnitchInstance {
     }
   }
 
+  /// Listens to any uncaught exceptions in the app and reports them to the repository.
+  /// It takes optional parameters such as `assignees` and `milestone`.
   void listenToExceptions({
     List<String>? assignees,
     int? milestone,
+    List<String>? labels,
   }) {
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
-      prepareAndReport(
-          details.exception.toString(), details.stack!, externalIssueLabel,
-          assignees: assignees, milestone: milestone);
+      if (labels != null) {
+        labels!.add(externalIssueLabel);
+      } else {
+        labels = [externalIssueLabel];
+      }
+      prepareAndReport(details.exception.toString(), details.stack!,
+          labels: labels, assignees: assignees, milestone: milestone);
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      prepareAndReport(error.toString(), stack, internalIssueLabel,
-          assignees: assignees, milestone: milestone);
+      if (labels != null) {
+        labels!.add(internalIssueLabel);
+      } else {
+        labels = [internalIssueLabel];
+      }
+      prepareAndReport(error.toString(), stack,
+          labels: labels, assignees: assignees, milestone: milestone);
       return true;
     };
     log("✅ GhSnitch Listen to exceptions");
   }
 
+  /// Prepares and reports an exception to the repository. It takes the `exception`, `stack`, and `label` as required parameters,
+  /// and optional parameters such as `assignees` and `milestone`.
   Future<bool> prepareAndReport(
     String exception,
-    StackTrace stack,
-    String label, {
+    StackTrace stack, {
+    List<String>? labels,
     List<String>? assignees,
     int? milestone,
   }) {
@@ -160,7 +197,7 @@ class GhSnitchInstance {
       }
       return report(
           title: exception.toString(),
-          labels: [label, bugLabel],
+          labels: labels,
           body: "```\n$body ```",
           milestone: milestone,
           assignees: assignees);
@@ -168,40 +205,51 @@ class GhSnitchInstance {
     return Future.value(false);
   }
 
-  Future<bool> issueIsNew(String body, String endpoint) async {
+  /// Checks if an issue with a similar `body` has already been reported in the repository.
+  /// It takes the `body` and `endpoint` as required parameters.
+  Future<bool> isAlreadyReported(String body, String endpoint) async {
+    bool isAlreadyReported = false;
     String params = "?state=all&labels=$fromGhRSnitchPackage";
     GhResponse ghResponse = await ghRequest.request("GET", endpoint + params);
     if (ghResponse.statusCode == 200) {
-      bool notExist = true;
       for (var e in (ghResponse.response as List)) {
-        double comparePercent = compare(e[bodyBody], body);
-        if (comparePercent >= 80.0) {
-          notExist = false;
+        String removedLastLine = e[bodyBody].toString().removeLastLine();
+        double similarity = body.similarityTo(removedLastLine);
+        if (similarity > 0.7) {
+          isAlreadyReported = true;
+          break;
         }
       }
-      return notExist;
     }
-    return false;
+    return isAlreadyReported;
   }
 
+  /// Retrieves all the issues in the repository that contain the specified `userId`.
   Future<List<Issue>> getIssuesByUserID(String userId) async {
+    //TODO: Fix get closed issues issue
+    String params = "?state=all";
     List<Issue> result = [];
     String issueEndpoint = "$owner/$repo/issues";
-    GhResponse ghResponse = await ghRequest.request("GET", issueEndpoint);
+    GhResponse ghResponse =
+        await ghRequest.request("GET", issueEndpoint + params);
     if (ghResponse.statusCode == 200) {
       for (var e in (ghResponse.response as List)) {
-        if (e["body"].contains(userId)) {
-          result.add(Issue.fromJson(e));
+        if (e["body"] != null) {
+          if (e["body"].contains(userId)) {
+            result.add(Issue.fromJson(e));
+          }
         }
       }
     }
     return result;
   }
 
-  Future<Issue> getReportsComments() async {
+  /// Retrieves all the comments made on the issues reported by the current user.
+  Future<Issue> getReportsComments({String? userId}) async {
     final Issue issues = Issue();
-    ClientInformation info = await ClientInformation.fetch();
-    List userIssues = await getIssuesByUserID(info.deviceId);
+
+    String? id = userId ?? await deviceId;
+    List userIssues = await getIssuesByUserID(id ?? '');
     for (Issue issue in userIssues) {
       String listCommentsEp = "$owner/$repo/issues/${issue.id}/comments";
       GhResponse response = await ghRequest.request("GET", listCommentsEp);
@@ -211,13 +259,15 @@ class GhSnitchInstance {
     return issues;
   }
 
-  Future<bool> submitComment(String reportId, String comment) async {
+  /// Submits a comment to the specified issue.
+  Future<bool> submitComment(String reportId, String comment,
+      {String? userId}) async {
     bool commented = false;
     String submitCommentEp = "$owner/$repo/issues/$reportId/comments";
-    ClientInformation info = await ClientInformation.fetch();
+    String? id = userId ?? await deviceId;
     Map commentBody = {
       commentsBodyField:
-          "$comment\n${deviceIdTemplate.replaceFirst(idMark, info.deviceId)}"
+          "$comment\n${deviceIdTemplate.replaceFirst(idMark, id ?? '')}"
     };
     String commentBodyToString = json.encode(commentBody);
     GhResponse response = await ghRequest.request("POST", submitCommentEp,
@@ -233,6 +283,8 @@ class GhSnitchInstance {
     return commented;
   }
 
+  /// Uploads a screenshot image to the repository.
+  /// It takes the `imgPath` and optional `screenShotsBranch` as parameters.
   Future<String?> uploadScreenShot(String imgPath,
       {String screenShotsBranch = "GhSnitch_ScreenShots"}) async {
     Uint8List file = File(imgPath).readAsBytesSync();
@@ -259,14 +311,59 @@ class GhSnitchInstance {
     return null;
   }
 
-  Future get isConnected async {
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        return true;
-      }
-    } on SocketException catch (_) {
-      return false;
+  Future<String?> get deviceId async {
+    final deviceInfoPlugin = DeviceInfoPlugin();
+    String? id;
+    if (kIsWeb) {
+      id =
+          (await deviceInfoPlugin.webBrowserInfo).userAgent.hashCode.toString();
+    } else {
+      id = switch (defaultTargetPlatform) {
+        TargetPlatform.android => (await deviceInfoPlugin.androidInfo).id,
+        TargetPlatform.iOS =>
+          (await deviceInfoPlugin.iosInfo).identifierForVendor,
+        TargetPlatform.linux => (await deviceInfoPlugin.linuxInfo).id,
+        TargetPlatform.windows => (await deviceInfoPlugin.windowsInfo).deviceId,
+        TargetPlatform.macOS => (await deviceInfoPlugin.macOsInfo).systemGUID,
+        TargetPlatform.fuchsia => null
+      };
     }
+    return id;
+  }
+
+  Future<int> createMilestone({DateTime? milestoneDueOn}) async {
+    int? id;
+    String createMilestoneEp = "$owner/$repo/milestones";
+    Map milestoneBody = {
+      'title': await GetAppVersion.version,
+    };
+    if (milestoneDueOn != null) {
+      milestoneBody['due_on'] = milestoneDueOn.toUtc().toString();
+    }
+    String milestoneBodyToString = json.encode(milestoneBody);
+    GhResponse response = await ghRequest.request("POST", createMilestoneEp,
+        body: milestoneBodyToString);
+    if (response.statusCode == 201) {
+      log("✅ Created Milestone");
+      id = response.response['number'];
+    } else {
+      log("❌ Failure to Create Milestone");
+      log(response.response.toString());
+    }
+    return id!;
+  }
+
+  Future<int?> getMilestoneID() async {
+    int? result;
+    String milestonesEndpoint = "$owner/$repo/milestones";
+    GhResponse ghResponse = await ghRequest.request("GET", milestonesEndpoint);
+    if (ghResponse.statusCode == 200) {
+      for (var e in (ghResponse.response as List)) {
+        if (e['title'] == await GetAppVersion.version) {
+          result = e['number'];
+        }
+      }
+    }
+    return result;
   }
 }

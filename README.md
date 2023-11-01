@@ -1,42 +1,24 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# GitHub Snitch
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-## Package for open github issue for crashes, issues & proposals
+GitHub Snitch is a Flutter package that helps you report bugs and issues on GitHub automatically. It can also be used to submit comments on existing issues.
 
 ## Features
-- Create labels for package
+- Report bugs on GitHub issues with specific labels, assignees, and milestones
+  - Automatically when calling the `listenToExceptions` method in `main` as shown in the example
+  - Manually with the `report` method
+- Support offline cases (save locally and send later when a connection exists)
+- Get reported issues with all comments
+- Submit comments from the user and reply from GitHub issues by repository owners
+- Include screenshots in the report for better issue clarification.
+- Create follow labels for package
 	- GhSnitch-external for Errors not caught by Flutter Framework
 	- GhSnitch-internal for Errors caught by Flutter Framework
-  - Reported by GhSnitch Package for know which issues reported from this package
-- Report bugs on github issues with specific labels,assignees, milestone
-  - Automaticlly when call `listenToExceptions` method in `main` as in example
-  - Manually with `report` method
-- Support offline case (save locally & send later when connection exist)
-- Support get issue reported with all comments
-- Support submit comments from user and reply from github issues by repo owners
-- Support include screenshots on report
+  - Reported by GhSnitch Package for knowing which issues are reported from this package
 
-## TODO
-- [x] Fetch issue comments & give user to discuss his issue/proposal from app with repo contributors
-- [ ] Fetch PR's & give user to discuss his new feature from app with repo contributors
-- [ ] Create Custom screens for Issues/PR's & screen for user to chat & discuss by comments
-- [x] Include screen shot on report
 
-💡 Feel free to add any idea 
+## Getting Started
 
-## Getting started
-
-After install package you need to generate [fine-grained personal access token<](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) choose fine-grained personal access token & select your repo & from Repository permissions check Issues
+After install package you need to generate [fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) choose fine-grained personal access token & select your repo & from Repository permissions check Issues
 Access: Read and write.
 
 We need also `owner username` & `repo name`
@@ -55,21 +37,79 @@ As you see we used keys from Environment
 ```dart
 WidgetsFlutterBinding.ensureInitialized();
   const String owner = String.fromEnvironment('owner');
+  String appFlavor = 'x';
+  String appVersion = '2.0.0';
   GhSnitch.initialize(
       owner: owner,
       token: const String.fromEnvironment('token'),
       repo: const String.fromEnvironment("repo"));
   if (kReleaseMode) {
     // For report exceptions & bugs Automaticlly
-    GhSnitch.listenToExceptions(assignees: [owner]);
+    GhSnitch.listenToExceptions(assignees: [owner], labels: [appFlavor, appVersion]);
   }
   runApp(const MyApp());
 ```
+Now that GitHub Snitch is initialized, you can start reporting bugs and issues. To do this, you can call the `report` method:
 
-* For report issues Manually (from users) check _report method on [`example`](example/lib/main.dart)
+```dart
+GhSnitch.report(
+  title: '<issue-title>',
+  body: '<issue-body>',
+  screenShot: '<screenshot-url>',
+  screenShotBranch: '<screenshot-branch>',
+  labels: <List<String>?>,
+  assignees: <List<String>?>,
+  milestone: '<milestone> if null will create new milestone with app version name',
+  userId: '<user-id if exist if not package will use deviceID>',
+);
+```
 
-* For screenshots you need to create new branch `GhSnitch_ScreenShots` for save screenshots you can change default branch from `screenShotsBranch` report parameter
+The `report` method takes the following parameters:
 
-If you want to test it in debug mode you can remove ReleaseMode condition
+* `title`: The title of the issue.
+* `body`: The body of the issue.
+* `screenShot`: The URL of the screenshot.
+* `screenShotBranch`: parameter specifies the branch of the repository where the screenshot will be saved.
+* `labels`: A list of labels for the issue.
+* `assignees`: A list of users to assign the issue to.
+* `milestone`: The milestone to associate the issue with.
 
-⚙️ Finally feel free to contribute ⚙️
+## Listening to Exceptions
+
+GitHub Snitch can also be used to listen to exceptions and bugs. To do this, you can call the `listenToExceptions` method:
+
+```
+GhSnitch.listenToExceptions(
+  assignees: <List<String>?>,
+  milestone: <int?>,
+);
+```
+
+The `listenToExceptions` method takes the following parameters:
+
+* `assignees`: A list of users to assign the issue to.
+* `milestone`: The milestone to associate the issue with.
+
+When an exception or bug is detected, GitHub Snitch will automatically create an issue on GitHub.
+
+## Submitting Comments
+
+GitHub Snitch can also be used to submit comments on existing issues. To do this, you can call the `submitComment` method:
+
+```dart
+GhSnitch.submitComment(
+  reportId: '<issue-id>',
+  comment: '<comment-text>',
+);
+```
+
+The `submitComment` method takes the following parameters:
+
+* `reportId`: The ID of the issue.
+* `comment`: The text of the comment.
+
+## Conclusion
+
+GitHub Snitch is a powerful tool that can help you keep track of bugs and issues on GitHub. It can also be used to submit comments on existing issues. If you're looking for a way to improve your GitHub workflow, I highly recommend checking out GitHub Snitch.
+
+Feel free to contribute to this package by opening issues or submitting pull requests on [GitHub ↗](https://github.com/M97Chahboun/github_snitch).
