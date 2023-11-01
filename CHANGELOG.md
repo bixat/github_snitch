@@ -42,3 +42,6 @@
 
 ## 0.0.11
 * Fixed bug on issue model
+
+## 0.0.12
+* Added report issue on app version milestone

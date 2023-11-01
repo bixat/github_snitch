@@ -1,6 +1,6 @@
 name: github_snitch
 description: Package for capture & open github issue for crashes, issues & proposals
-version: 0.0.11
+version: 0.0.12
 homepage: https://github.com/M97Chahboun/github_snitch
 
 environment:
@@ -16,6 +16,7 @@ dependencies:
   string_similarity: ^2.0.0
   connectivity_plus: ^4.0.1
   device_info_plus: ^9.0.2
+  package_info_plus: ^4.2.0
 
 dev_dependencies:
   flutter_test:

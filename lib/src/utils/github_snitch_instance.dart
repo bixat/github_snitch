@@ -5,6 +5,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:github_snitch/src/utils/extensions.dart';
+import 'package:github_snitch/src/utils/get_app_version.dart';
 import 'package:string_similarity/string_similarity.dart';
 import 'package:universal_io/io.dart';
 
@@ -66,14 +67,15 @@ class GhSnitchInstance {
           issueBody["labels"] = labels;
         }
 
-        if (milestone != null) {
-          issueBody["milestone"] = milestone;
-        }
+        milestone ??= await getMilestoneID() ?? await createMilestone();
+        issueBody["milestone"] = milestone;
 
         String issueBodyToString = json.encode(issueBody);
 
         GhResponse response = await ghRequest.request("POST", issueEndpoint,
             body: issueBodyToString);
+        print(milestone);
+        print(response.response);
         if (response.statusCode == 201) {
           Map issueFieldsDecoded = Map.from(response.response);
           issueFieldsDecoded
@@ -327,5 +329,41 @@ class GhSnitchInstance {
       };
     }
     return id;
+  }
+
+  Future<int> createMilestone({DateTime? milestoneDueOn}) async {
+    int? id;
+    String createMilestoneEp = "$owner/$repo/milestones";
+    Map milestoneBody = {
+      'title': await GetAppVersion.version,
+    };
+    if (milestoneDueOn != null) {
+      milestoneBody['due_on'] = milestoneDueOn.toUtc().toString();
+    }
+    String milestoneBodyToString = json.encode(milestoneBody);
+    GhResponse response = await ghRequest.request("POST", createMilestoneEp,
+        body: milestoneBodyToString);
+    if (response.statusCode == 201) {
+      log("✅ Created Milestone");
+      id = response.response['number'];
+    } else {
+      log("❌ Failure to Create Milestone");
+      log(response.response.toString());
+    }
+    return id!;
+  }
+
+  Future<int?> getMilestoneID() async {
+    int? result;
+    String milestonesEndpoint = "$owner/$repo/milestones";
+    GhResponse ghResponse = await ghRequest.request("GET", milestonesEndpoint);
+    if (ghResponse.statusCode == 200) {
+      for (var e in (ghResponse.response as List)) {
+        if (e['title'] == await GetAppVersion.version) {
+          result = e['number'];
+        }
+      }
+    }
+    return result;
   }
 }
