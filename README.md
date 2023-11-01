@@ -59,7 +59,7 @@ GhSnitch.report(
   screenShotBranch: '<screenshot-branch>',
   labels: <List<String>?>,
   assignees: <List<String>?>,
-  milestone: <int?>,
+  milestone: '<milestone> if null will create new milestone with app version name',
   userId: '<user-id if exist if not package will use deviceID>',
 );
 ```
