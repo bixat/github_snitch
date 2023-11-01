@@ -25,9 +25,10 @@ class Issue {
     id = json[issueIdField].toString();
     title = json[issueTitleField];
     state = json[issueStateField];
-    labels = List<String>.from(json[issueLabelsField]);
+    labels =
+        List<String>.from(json[issueLabelsField]?.map((e) => e['name']) ?? []);
     body = json[issueBodyField];
-    milestone = json[issueFieldMilstone];
+    milestone = json[issueFieldMilstone]?['number'] ?? 0;
     isOpen = state == "open";
   }
 }
