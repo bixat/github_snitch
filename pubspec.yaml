@@ -16,6 +16,7 @@ dependencies:
   string_similarity: ^2.0.0
   connectivity_plus: ^4.0.1
   device_info_plus: ^9.0.2
+  package_info_plus: ^4.2.0
 
 dev_dependencies:
   flutter_test:
