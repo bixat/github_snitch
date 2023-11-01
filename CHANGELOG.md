@@ -39,3 +39,6 @@
 * Use connectivity package for check network
 * Configured saved issues report
 * Use device info plus package for support all platform
+
+## 0.0.11
+* Fixed bug on issue model
