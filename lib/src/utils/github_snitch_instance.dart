@@ -123,7 +123,7 @@ class GhSnitchInstance {
             labels: issue.labels,
             body: "${issue.body!}\n${issueToMap[dateBody]}",
             fromCatch: true);
-                if (reported) {
+        if (reported) {
           Prefs.remove(e);
           log("✅ Reported saved issue");
         }

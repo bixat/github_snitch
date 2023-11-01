@@ -13,7 +13,7 @@ class Comment {
     this.isFromUser = false,
   });
 
-void fromJson(Map<String, dynamic> json) {
+  void fromJson(Map<String, dynamic> json) {
     body = json[commentsBodyField];
     date = json[commentsDateField];
     isFromUser = body!.contains(deviceIdStr);
