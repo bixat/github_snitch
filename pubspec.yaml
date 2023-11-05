@@ -19,6 +19,8 @@ dependencies:
   connectivity_plus: ^4.0.1
   device_info_plus: ^9.0.2
   package_info_plus: ^4.2.0
+  image_picker: ^1.0.4
+  mime: ^1.0.4
 
 dev_dependencies:
   flutter_test:
