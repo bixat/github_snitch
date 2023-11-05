@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:github_snitch/src/models/issue.dart';
 
 import 'utils/github_snitch_instance.dart';
@@ -65,7 +67,7 @@ class GhSnitch {
   static Future<bool> report(
       {required String title,
       required String body,
-      String? screenShot,
+      Uint8List? screenShot,
       String? screenShotBranch,
       List<String>? labels,
       List<String>? assignees,
@@ -125,5 +127,9 @@ class GhSnitch {
   /// ```
   static Future<bool> submitComment(String reportId, String comment) {
     return _instance.submitComment(reportId, comment);
+  }
+
+  static openReportScreen(BuildContext context) {
+    return _instance.openReportScreen(context);
   }
 }
