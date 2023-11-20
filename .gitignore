@@ -31,3 +31,8 @@ build/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+
+example/linux/flutter/generated_plugin_registrant.cc
+example/linux/flutter/generated_plugins.cmake
+example/macos/Flutter/GeneratedPluginRegistrant.swift
+example/pubspec.lock
