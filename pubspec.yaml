@@ -10,18 +10,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.1.0
+  http: ^0.13.5
   shared_preferences: ^2.0.15
   universal_io: ^2.0.4
   string_similarity: ^2.0.0
-  connectivity_plus: ^5.0.1
+  connectivity_plus: ^4.0.1
   device_info_plus: ^9.0.2
   package_info_plus: ^4.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
+  flutter_lints: ^2.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
