@@ -45,3 +45,6 @@
 
 ## 0.0.12
 * Added report issue on app version milestone
+
+## 0.0.13
+* Update dependencies
