@@ -16,7 +16,6 @@ class ReportForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      insetPadding: const EdgeInsets.all(24.0),
       scrollable: true,
       title: const Text("Report issue or proposal"),
       content: Form(
@@ -97,10 +96,10 @@ class ReportForm extends StatelessWidget {
         ElevatedButton(
             style: ButtonStyle(
                 backgroundColor:
-                    MaterialStateProperty.all(context.primaryColor)),
+                    MaterialStateProperty.all(context.accentColor)),
             onPressed: context.pop,
             child: Text(
-              "إلغاء",
+              "Cancel",
               style: TextStyle(color: Theme.of(context).colorScheme.background),
             )),
         ValueListenableBuilder(
@@ -116,7 +115,7 @@ class ReportForm extends StatelessWidget {
                   : ElevatedButton(
                       style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all(context.accentColor)),
+                              MaterialStateProperty.all(context.primaryColor)),
                       child: Text(
                         "Report",
                         style: TextStyle(
