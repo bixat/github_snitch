@@ -18,7 +18,7 @@ class ReportForm extends StatelessWidget {
     return AlertDialog(
       insetPadding: const EdgeInsets.all(24.0),
       scrollable: true,
-      title: const Text('الإبلاغ عن مشكلة أو إقتراح'),
+      title: const Text("Report issue or proposal"),
       content: Form(
         key: reportFormKey,
         child: Column(
@@ -26,7 +26,7 @@ class ReportForm extends StatelessWidget {
             TextFormField(
               validator: (String? text) {
                 if (reportTitle.text.isEmpty) {
-                  return "الرجاء وضع عنوان";
+                  return "title is required";
                 }
                 return null;
               },
@@ -40,7 +40,7 @@ class ReportForm extends StatelessWidget {
                   borderSide:
                       BorderSide(color: context.primaryColor), //<-- SEE HERE
                 ),
-                labelText: 'عنوان',
+                labelText: 'title',
                 labelStyle: TextStyle(
                     fontWeight: FontWeight.bold, color: context.primaryColor),
               ),
@@ -53,7 +53,7 @@ class ReportForm extends StatelessWidget {
               maxLines: 15,
               validator: (String? text) {
                 if (text!.isEmpty) {
-                  return "الرجاء وضع وصف";
+                  return "description is required";
                 }
                 return null;
               },
@@ -66,7 +66,7 @@ class ReportForm extends StatelessWidget {
                   borderSide:
                       BorderSide(color: context.primaryColor), //<-- SEE HERE
                 ),
-                labelText: 'تفاصيل المشكلة أو الإقتراح',
+                labelText: 'Type your suggestion or issue',
                 hintText: "Type your suggestion or issue",
                 labelStyle: TextStyle(
                     fontWeight: FontWeight.bold, color: context.primaryColor),
@@ -75,7 +75,7 @@ class ReportForm extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("إرفاق صورة"),
+                const Text("Join screenshot"),
                 IconButton(
                     onPressed: () async {
                       final ImagePicker picker = ImagePicker();
@@ -118,7 +118,7 @@ class ReportForm extends StatelessWidget {
                           backgroundColor:
                               MaterialStateProperty.all(context.accentColor)),
                       child: Text(
-                        "إبلاغ",
+                        "Report",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.background),
@@ -138,7 +138,6 @@ class ReportForm extends StatelessWidget {
       reportLoading.value = true;
       bool sended = await GhSnitch.report(
           labels: ["from user"],
-          assignees: ['M97Chahboun'],
           title: reportTitle.text,
           body: reportBody.text,
           screenShot: screenShot,

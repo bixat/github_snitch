@@ -57,6 +57,7 @@ class IssueComments extends StatelessWidget {
               height: 60,
               width: double.infinity,
               decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
                   color: context.backgroundColor,
                   border: Border.all(color: context.primaryColor)),
               child: Row(
@@ -67,7 +68,7 @@ class IssueComments extends StatelessWidget {
                       controller: commentController,
                       decoration: InputDecoration(
                           contentPadding: const EdgeInsets.all(8),
-                          hintText: "كتابة رسالة...",
+                          hintText: "type mesage",
                           hintStyle: TextStyle(color: Colors.grey.shade500),
                           border: InputBorder.none),
                     ),
@@ -111,7 +112,7 @@ class IssueComments extends StatelessWidget {
         commentController.clear();
       } else {
         const snackBar = SnackBar(
-          content: Text('حدث خطأ أثناء الإرسال، الرجاء المحاولة لاحقا'),
+          content: Text("Error occurred while submitting comment, try again"),
         );
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);

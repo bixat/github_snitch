@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:github_snitch/github_snitch.dart';
 import 'package:github_snitch/src/utils/extensions.dart';
 
@@ -28,9 +29,8 @@ class CommentWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                comment.body!,
-                style: TextStyle(color: context.backgroundColor),
+              MarkdownBody(
+                data: comment.body!,
               ),
             ],
           ),

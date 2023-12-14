@@ -8,15 +8,15 @@ import 'package:github_snitch/src/utils/extensions.dart';
 class Reports extends StatelessWidget {
   final ValueNotifier reportLoading = ValueNotifier(false);
   List<Issue> issues = [];
-  Reports({Key? key}) : super(key: key);
+  Reports({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(
-            "الإبلاغ عن إقتراح أو مشكلة",
-            // style: TextStyle(color: context.primaryColor),
+          title
+          : const Text(
+            "Report a suggestion or issue",
           ),
           actions: [
             IconButton(
@@ -73,9 +73,9 @@ class Reports extends StatelessWidget {
                 child: snapshot.connectionState == ConnectionState.waiting
                     ? const CircularProgressIndicator()
                     : const Text(
-                        "لم تبلغ أي مشكلة أو إقتراح"
+                        "No issue or suggestion reported"
                         "\n"
-                        "لتبليغ إقتراح أو مشكلة إضغط على +",
+                        "To report a suggestion or issue, click +",
                         style: TextStyle(fontWeight: FontWeight.bold),
                         textDirection: TextDirection.rtl,
                       ));
