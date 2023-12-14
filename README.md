@@ -1,6 +1,8 @@
 # GitHub Snitch
 
 GitHub Snitch is a Flutter package that helps you report bugs and issues on GitHub automatically. It can also be used to submit comments on existing issues.
+demo for testing : https://gh-snitch.web.app
+
 
 ## Features
 - Report bugs on GitHub issues with specific labels, assignees, and milestones
