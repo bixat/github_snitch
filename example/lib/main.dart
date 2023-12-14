@@ -1,4 +1,3 @@
-import 'package:example/reports.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:github_snitch/github_snitch.dart';
@@ -26,6 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Report Issues on your repo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -94,11 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) {
-                    return Reports();
-                  },
-                ));
+                GhSnitch.openReportScreen(context);
               },
               icon: const Icon(Icons.report))
         ],

@@ -4,10 +4,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:github_snitch/src/screens/reports.dart';
 import 'package:github_snitch/src/utils/extensions.dart';
 import 'package:github_snitch/src/utils/get_app_version.dart';
+import 'package:mime/mime.dart';
 import 'package:string_similarity/string_similarity.dart';
-import 'package:universal_io/io.dart';
 
 import '../models/comment.dart';
 import '../models/issue.dart';
@@ -31,7 +33,7 @@ class GhSnitchInstance {
   Future<bool> report(
       {required String title,
       required String body,
-      String? screenShot,
+      Uint8List? screenShot,
       String? screenShotsBranch,
       List<String>? labels,
       List<String>? assignees,
@@ -74,8 +76,6 @@ class GhSnitchInstance {
 
         GhResponse response = await ghRequest.request("POST", issueEndpoint,
             body: issueBodyToString);
-        print(milestone);
-        print(response.response);
         if (response.statusCode == 201) {
           Map issueFieldsDecoded = Map.from(response.response);
           issueFieldsDecoded
@@ -285,18 +285,18 @@ class GhSnitchInstance {
 
   /// Uploads a screenshot image to the repository.
   /// It takes the `imgPath` and optional `screenShotsBranch` as parameters.
-  Future<String?> uploadScreenShot(String imgPath,
+  Future<String?> uploadScreenShot(Uint8List file,
       {String screenShotsBranch = "GhSnitch_ScreenShots"}) async {
-    Uint8List file = File(imgPath).readAsBytesSync();
     String content = base64.encode(file);
-    String fileName = imgPath.split("/").last;
+    String? mime = lookupMimeType('', headerBytes: file);
+    String ext = extensionFromMime(mime!);
+    String fileName = "${content.hashCode}.${ext.split("/").last}";
     String uploadImgEp = "$owner/$repo/contents/$fileName";
     var data = json.encode({
       "message": "uploaded screenshot by GhSnitch package",
       "content": content,
       "branch": screenShotsBranch
     });
-
     GhResponse response =
         await ghRequest.request("PUT", uploadImgEp, body: data);
     if (response.statusCode == 201) {
@@ -365,5 +365,9 @@ class GhSnitchInstance {
       }
     }
     return result;
+  }
+
+  openReportScreen(BuildContext context) async {
+    context.push(Reports());
   }
 }
