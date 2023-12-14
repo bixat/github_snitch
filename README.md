@@ -15,6 +15,24 @@ GitHub Snitch is a Flutter package that helps you report bugs and issues on GitH
 	- GhSnitch-internal for Errors caught by Flutter Framework
   - Reported by GhSnitch Package for knowing which issues are reported from this package
 
+## Upcoming features
+- support notification for chat with user and repository owners
+
+## Tips
+> [!TIP]
+> is preferable to use empty repo for reporting issues & bugs then transfer important items to main repo
+
+> [!TIP]
+> for send screenshot to user from issue comment use some website for upload image and add link to comment, don't use screenshot from github repo because it will not work
+
+> [!TIP]
+> for send screenshot to user from issue comment use some website for upload image and add link to comment, don't use screenshot from github repo because it will not work
+
+> [!TIP]
+> You can use ready screens by call `GhSnitch.openReportScreen(context);` or build ypu screens and use methods like `GhSnitch.report` & `GhSnitch.submitComment` to submit issues & comments
+
+> [!TIP]
+> Create branch for upload screenshots with name `screenshots` or any name you want but you need to pass this name to `screenShotBranch` parameter in `GhSnitch.report` method if you used `GhSnitch.openReportScreen(context);` you should use `screenshots` name
 
 ## Getting Started
 
