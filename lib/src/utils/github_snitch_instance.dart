@@ -235,9 +235,9 @@ class GhSnitchInstance {
     if (ghResponse.statusCode == 200) {
       for (var e in (ghResponse.response as List)) {
         if (e["body"] != null) {
-          // if (e["body"].contains(userId)) {
-          result.add(Issue.fromJson(e));
-          // }
+          if (e["body"].contains(userId)) {
+            result.add(Issue.fromJson(e));
+          }
         }
       }
     }
