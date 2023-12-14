@@ -51,6 +51,6 @@
 
 ## 0.0.14
 * Added `GhSnitch.openReportScreen(context);` for open report screen with follow options
-	- Report issue with screenshot & comment
+	- Report issue with screenshot
 	- Submit comment to issue
 	- Follow up issue status
