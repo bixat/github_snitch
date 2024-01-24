@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 extension RemoveLastLine on String {
-  String removeLastLine() {
+  String get removeLastLine {
     int index = lastIndexOf('\n');
     if (index != -1) {
       return substring(0, index);

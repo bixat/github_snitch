@@ -213,10 +213,11 @@ class GhSnitchInstance {
     GhResponse ghResponse = await ghRequest.request("GET", endpoint + params);
     if (ghResponse.statusCode == 200) {
       for (var e in (ghResponse.response as List)) {
-        String removedLastLine = e[bodyBody].toString().removeLastLine();
-        double similarity = body.similarityTo(removedLastLine);
+        String removedLastLine = e[bodyBody].toString().removeLastLine;
+        double similarity = body.removeLastLine.similarityTo(removedLastLine);
         if (similarity > 0.7) {
           isAlreadyReported = true;
+          await submitComment(e[issueNumber].toString(), "+1");
           break;
         }
       }
