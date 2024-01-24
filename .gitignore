@@ -36,3 +36,5 @@ example/linux/flutter/generated_plugin_registrant.cc
 example/linux/flutter/generated_plugins.cmake
 example/macos/Flutter/GeneratedPluginRegistrant.swift
 example/pubspec.lock
+.vscode/branch-timer.json
+.vscode/launch.json
