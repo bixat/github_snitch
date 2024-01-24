@@ -5,19 +5,18 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "examsple",
+			"name": "example",
 			"cwd": "example",
 			"request": "launch",
 			"type": "dart",
 			//TODO: Add your keys here
 			"args": [
 				"--dart-define",
-				"owner=M97chahboun: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:gitflow",
-                "--dart-define",
-                "repo=gitflow",
-                "--dart-define",
-				"token=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",
-				
+				"owner=<owner>",
+				"--dart-define",
+				"repo=<repo>",
+				"--dart-define",
+				"token=<token>"
 			]
 		},
 		{
@@ -25,11 +24,11 @@
 			"cwd": "example",
 			"request": "launch",
 			"type": "dart",
-			// "flutterMode": "profile",
+			"flutterMode": "profile",
 			"args": [
-				"--dart-define owner=M97chahboun",
-				"--dart-define repo=gitflow",
-				"--dart-define token=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"
+				"--dart-define owner=owner",
+				"--dart-define repo=repo",
+				"--dart-define token=token"
 			]
 		},
 		{
