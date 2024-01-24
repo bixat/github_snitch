@@ -4,6 +4,7 @@ const String fromGhRSnitchPackage = "Reported by GhSnitch Package";
 const String bugLabel = "bug";
 const String bodyTitle = "title";
 const String bodyBody = "body";
+const issueNumber = "number";
 const String ownerBody = "owner";
 const String repoBody = "repo";
 const String dateBody = "date";

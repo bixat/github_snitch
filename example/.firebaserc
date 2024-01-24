@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "json2dart"
+  },
+  "targets": {
+    "json2dart": {
+      "hosting": {
+        "gh-snitch": [
+          "gh-snitch"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
