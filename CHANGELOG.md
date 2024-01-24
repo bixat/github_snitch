@@ -54,3 +54,6 @@
 	- Report issue with screenshot
 	- Submit comment to issue
 	- Follow up issue status
+
+## 0.0.15
+* handled duplicated issues by add (+1) as comment on duplicated issues

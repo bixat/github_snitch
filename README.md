@@ -12,6 +12,7 @@ demo for testing : https://gh-snitch.web.app
 - Get reported issues with all comments
 - Submit comments from the user and reply from GitHub issues by repository owners
 - Include screenshots in the report for better issue clarification.
+- Handled duplicated reports by added comment (+1) for duplicate issues
 - Create follow labels for package
 	- GhSnitch-external for Errors not caught by Flutter Framework
 	- GhSnitch-internal for Errors caught by Flutter Framework
@@ -23,9 +24,6 @@ demo for testing : https://gh-snitch.web.app
 ## Tips
 > [!TIP]
 > Is preferable to use empty repo for reporting issues & bugs then transfer important items to main repo
-
-> [!TIP]
-> For send screenshot to user from issue comment use some website for upload image and add link to comment, don't use screenshot from github repo because it will not work
 
 > [!TIP]
 > For send screenshot to user from issue comment use some website for upload image and add link to comment, don't use screenshot from github repo because it will not work
