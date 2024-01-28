@@ -6,7 +6,7 @@ import 'package:github_snitch/src/utils/extensions.dart';
 class CommentWidget extends StatelessWidget {
   final Comment comment;
 
-  const CommentWidget({Key? key, required this.comment}) : super(key: key);
+  const CommentWidget({super.key, required this.comment});
   @override
   Widget build(BuildContext context) {
     return Container(

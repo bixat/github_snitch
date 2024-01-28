@@ -8,7 +8,7 @@ class IssueComments extends StatelessWidget {
   final TextEditingController commentController = TextEditingController();
   final ValueNotifier refreshComments = ValueNotifier(false);
 
-  IssueComments({Key? key, required this.issue}) : super(key: key);
+  IssueComments({super.key, required this.issue});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

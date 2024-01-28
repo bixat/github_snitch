@@ -156,14 +156,14 @@ class GhSnitchInstance {
     int? milestone,
     List<String>? labels,
   }) {
-    FlutterError.onError = (details) {
+    FlutterError.onError = (details) async {
       FlutterError.presentError(details);
       if (labels != null) {
         labels!.add(externalIssueLabel);
       } else {
         labels = [externalIssueLabel];
       }
-      prepareAndReport(details.exception.toString(), details.stack!,
+      await prepareAndReport(details.exception.toString(), details.stack!,
           labels: labels, assignees: assignees, milestone: milestone);
     };
 
