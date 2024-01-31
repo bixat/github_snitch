@@ -11,15 +11,13 @@ import 'package:github_snitch/src/utils/get_app_version.dart';
 import 'package:mime/mime.dart';
 import 'package:string_similarity/string_similarity.dart';
 
+import '../gh_snitch.dart';
 import '../models/comment.dart';
 import '../models/issue.dart';
 import 'constants.dart';
 import 'gh_requests.dart';
 import 'gh_response.dart';
 import 'prefs.dart';
-
-typedef OnReport = Future<void> Function(
-    String title, String body, List<String>? labels, int milestone, String? userId)?;
 
 class GhSnitchInstance {
   String? token;

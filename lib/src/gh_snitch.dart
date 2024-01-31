@@ -4,6 +4,9 @@ import 'package:github_snitch/src/models/issue.dart';
 
 import 'utils/github_snitch_instance.dart';
 
+typedef OnReport = Future<void> Function(String title, String body,
+    List<String>? labels, int milestone, String? userId)?;
+    
 /// A class that provides functionality to report issues and bugs on GitHub.
 ///
 /// This class provides static methods for initializing the `GhSnitch` instance,
