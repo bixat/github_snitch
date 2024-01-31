@@ -57,3 +57,6 @@
 
 ## 0.0.15
 * handled duplicated issues by add (+1) as comment on duplicated issues
+
+## 0.0.16
+* Added onReport callback for handle api integrations
