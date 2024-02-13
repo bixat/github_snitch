@@ -135,7 +135,7 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: const Text("select issue & start chating with support"),
+      child: Text("select issue & start chating with support"),
     );
   }
 }
