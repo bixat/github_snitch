@@ -205,7 +205,7 @@ class GhSnitchInstance {
   }
 
   /// Checks if an issue with a similar `body` has already been reported in the repository.
-  /// It takes the `body` and `endpoint` as required parameters.
+  /// It takes the `body` as required parametes.
   Future<bool> isAlreadyReported(String body) async {
     bool isAlreadyReported = false;
     String url =
