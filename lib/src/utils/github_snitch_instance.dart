@@ -209,18 +209,13 @@ class GhSnitchInstance {
   /// It takes the `body` and `endpoint` as required parameters.
   Future<bool> isAlreadyReported(String body, String endpoint) async {
     bool isAlreadyReported = false;
-    String params = "?state=all&labels=$fromGhRSnitchPackage";
-    GhResponse ghResponse = await ghRequest.request("GET", endpoint + params);
+    String url =
+        "https://api.github.com/search/issues?q=repo:$owner/$repo+is:issue+is:open+${body.substring(0, 255)}";
+    GhResponse ghResponse =
+        await ghRequest.request("GET", endpoint, isSearch: true);
     if (ghResponse.statusCode == 200) {
-      for (var e in (ghResponse.response as List)) {
-        String removedLastLine = e[bodyBody].toString().removeLastLine;
-        double similarity = body.removeLastLine.similarityTo(removedLastLine);
-        if (similarity > 0.7) {
-          isAlreadyReported = true;
-          await submitComment(e[issueNumber].toString(), "+1");
-          break;
-        }
-      }
+      isAlreadyReported = ghResponse.response['total_count'] != 0;
+      await submitComment(ghResponse.response[0][issueNumber].toString(), "+1");
     }
     return isAlreadyReported;
   }
