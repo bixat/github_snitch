@@ -13,7 +13,6 @@ dependencies:
   http: ^1.1.0
   shared_preferences: ^2.0.15
   universal_io: ^2.0.4
-  string_similarity: ^2.0.0
   connectivity_plus: ^5.0.1
   device_info_plus: ^9.0.2
   package_info_plus: ^4.2.0

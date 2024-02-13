@@ -9,7 +9,6 @@ import 'package:github_snitch/src/screens/reports.dart';
 import 'package:github_snitch/src/utils/extensions.dart';
 import 'package:github_snitch/src/utils/get_app_version.dart';
 import 'package:mime/mime.dart';
-import 'package:string_similarity/string_similarity.dart';
 
 import '../models/comment.dart';
 import '../models/issue.dart';
@@ -43,7 +42,7 @@ class GhSnitchInstance {
     ConnectivityResult connectivity = await Connectivity().checkConnectivity();
     if (!(connectivity == ConnectivityResult.none)) {
       String issueEndpoint = "$owner/$repo/issues";
-      bool alreadyReported = await isAlreadyReported(body, issueEndpoint);
+      bool alreadyReported = await isAlreadyReported(body);
       if (alreadyReported) {
         log("✅ Issue Already Reported");
         return true;
@@ -207,15 +206,17 @@ class GhSnitchInstance {
 
   /// Checks if an issue with a similar `body` has already been reported in the repository.
   /// It takes the `body` and `endpoint` as required parameters.
-  Future<bool> isAlreadyReported(String body, String endpoint) async {
+  Future<bool> isAlreadyReported(String body) async {
     bool isAlreadyReported = false;
     String url =
         "https://api.github.com/search/issues?q=repo:$owner/$repo+is:issue+is:open+${body.substring(0, 255)}";
-    GhResponse ghResponse =
-        await ghRequest.request("GET", endpoint, isSearch: true);
+    GhResponse ghResponse = await ghRequest.request("GET", url, isSearch: true);
     if (ghResponse.statusCode == 200) {
       isAlreadyReported = ghResponse.response['total_count'] != 0;
-      await submitComment(ghResponse.response[0][issueNumber].toString(), "+1");
+      if (isAlreadyReported) {
+        await submitComment(
+            ghResponse.response[0][issueNumber].toString(), "+1");
+      }
     }
     return isAlreadyReported;
   }
