@@ -34,9 +34,9 @@ class GhRequest {
   /// GhResponse response = await ghRequest.request('GET', 'owner/repo/issues');
   /// ```
   Future<GhResponse> request(String method, String endpoint,
-      {String? body}) async {
+      {String? body, bool isSearch = false}) async {
     headers[HttpHeaders.authorizationHeader] = "Bearer $token";
-    Uri url = Uri.parse(baseUrl + endpoint);
+    Uri url = Uri.parse(isSearch ? endpoint : baseUrl + endpoint);
     Request request = Request(method, url);
     request.body = body ?? "";
     request.headers.addAll(headers);
