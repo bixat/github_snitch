@@ -60,3 +60,6 @@
 
 ## 0.0.16
 * Fixed duplicated issues caused by pagination with using search api
+
+## 0.0.17
+* Fixed report manually issue (hotfix)
