@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:math' as math;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -208,7 +209,10 @@ class GhSnitchInstance {
   /// It takes the `body` as required parametes.
   Future<bool> isAlreadyReported(String body) async {
     bool isAlreadyReported = false;
-    body = body.replaceAll("```", "").substring(0, 255).replaceFirst("#", "");
+    body = body
+        .replaceAll("```", "")
+        .substring(0, math.min(body.length, 255))
+        .replaceFirst("#", "");
     String url =
         "https://api.github.com/search/issues?q=repo:$owner/$repo+is:issue+is:open+$body";
     GhResponse ghResponse = await ghRequest.request("GET", url, isSearch: true);
