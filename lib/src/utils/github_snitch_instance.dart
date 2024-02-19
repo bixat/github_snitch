@@ -39,11 +39,13 @@ class GhSnitchInstance {
       List<String>? assignees,
       int? milestone,
       String? userId,
+      bool isFromUser = true,
       bool fromCatch = false}) async {
     ConnectivityResult connectivity = await Connectivity().checkConnectivity();
     if (!(connectivity == ConnectivityResult.none)) {
       String issueEndpoint = "$owner/$repo/issues";
-      bool alreadyReported = await isAlreadyReported(body);
+      final bool alreadyReported =
+          isFromUser ? false : await isAlreadyReported(body);
       if (alreadyReported) {
         log("✅ Issue Already Reported");
         return true;
@@ -200,6 +202,7 @@ class GhSnitchInstance {
           labels: labels,
           body: "```\n$body ```",
           milestone: milestone,
+          isFromUser: false,
           assignees: assignees);
     }
     return Future.value(false);
