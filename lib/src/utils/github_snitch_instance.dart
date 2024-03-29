@@ -22,6 +22,7 @@ class GhSnitchInstance {
   String? token;
   String? owner;
   String? repo;
+  int? maxDuplicatedReports;
   late GhRequest ghRequest;
   static GhSnitchInstance get instance => GhSnitchInstance();
   bool get initialized => token != null && repo != null && owner != null;
@@ -136,10 +137,11 @@ class GhSnitchInstance {
   /// Initializes the `GhSnitchInstance` by setting the `token`, `owner`, and `repo` properties.
   /// It also creates a `GhRequest` object using the `token` property and calls the `reportSavedIssues` method.
   void initialize(
-      {required String token, required String owner, required String repo}) {
+      {required String token, required String owner, required String repo, int maxDuplicatedReports = 20}) {
     this.token = token;
     this.owner = owner;
     this.repo = repo;
+    this.maxDuplicatedReports = maxDuplicatedReports;
     if (token.isEmpty || owner.isEmpty || repo.isEmpty) {
       log("🔴 Echec to initialize GhSnitch");
     } else {
@@ -217,7 +219,8 @@ class GhSnitchInstance {
         "https://api.github.com/search/issues?q=repo:$owner/$repo+is:issue+is:open+$body";
     GhResponse ghResponse = await ghRequest.request("GET", url, isSearch: true);
     if (ghResponse.statusCode == 200) {
-      isAlreadyReported = ghResponse.response['total_count'] != 0;
+      final count = ghResponse.response['total_count'];
+      isAlreadyReported = count != 0 || count <= maxDuplicatedReports;
       if (isAlreadyReported) {
         await submitComment(
             ghResponse.response['items'][0][issueNumber].toString(), "+1");
