@@ -59,11 +59,12 @@
 * handled duplicated issues by add (+1) as comment on duplicated issues
 
 ## 0.0.16
-* Added onReport callback for handle api integrations
 * Fixed duplicated issues caused by pagination with using search api
 
 ## 0.0.17
 * Fixed report manually issue (hotfix)
 
-## 0.0.17
+## 0.0.18
 * Added maxDuplicatedReports parameter for over control on duplicated reports count
+* Added labels to duplicated reports comment
+* Added onReport callback parameter for handle api integrations

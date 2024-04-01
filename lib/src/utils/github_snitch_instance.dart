@@ -46,7 +46,7 @@ class GhSnitchInstance {
     ConnectivityResult connectivity = await Connectivity().checkConnectivity();
     if (!(connectivity == ConnectivityResult.none)) {
       String issueEndpoint = "$owner/$repo/issues";
-      bool alreadyReported = await isAlreadyReported(body);
+      bool alreadyReported = await isAlreadyReported(body, labels);
       if (alreadyReported) {
         log("✅ Issue Already Reported");
         return true;
@@ -216,7 +216,7 @@ class GhSnitchInstance {
 
   /// Checks if an issue with a similar `body` has already been reported in the repository.
   /// It takes the `body` as required parametes.
-  Future<bool> isAlreadyReported(String body) async {
+  Future<bool> isAlreadyReported(String body, List<String>? labels) async {
     bool isDuplicated = false;
     body = body
         .replaceAll("```", "")
@@ -231,8 +231,13 @@ class GhSnitchInstance {
       if (isDuplicated) {
         final comments = ghResponse.response["items"].first["comments"];
         if (comments < maxDuplicatedReports) {
+          String labelsContent = "";
+          if (labels != null) {
+            labelsContent = "Labels: ${labels.join(", ")}";
+          }
           await submitComment(
-              ghResponse.response['items'][0][issueNumber].toString(), "+1");
+              ghResponse.response['items'][0][issueNumber].toString(),
+              "+1\n$labelsContent");
         }
       }
     }
