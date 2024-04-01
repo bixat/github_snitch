@@ -222,7 +222,7 @@ class GhSnitchInstance {
         if (labels != null) {
           await submitComment(
               ghResponse.response['items'][0][issueNumber].toString(),
-              "+1\nLabels: ");
+              "+1\nLabels: ${labels.join(", ")}");
         }
       }
     }
