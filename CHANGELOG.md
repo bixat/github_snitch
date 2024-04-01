@@ -64,3 +64,6 @@
 
 ## 0.0.17
 * Fixed report manually issue (hotfix)
+
+## 0.0.17
+* Addded onReport method for external usage
