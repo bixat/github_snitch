@@ -64,5 +64,6 @@
 ## 0.0.17
 * Fixed report manually issue (hotfix)
 
-## 0.0.17
-* Added maxDuplicatedReports parameter for over control on duplicated reports count 
+## 0.0.18
+* Added maxDuplicatedReports parameter for over control on duplicated reports count
+* Added labels to duplicated reports comment
