@@ -4,6 +4,9 @@ import 'package:github_snitch/src/models/issue.dart';
 
 import 'utils/github_snitch_instance.dart';
 
+typedef OnReport = void Function(String title, String body,
+    List<String>? labels, int milestone, String? userId)?;
+
 /// A class that provides functionality to report issues and bugs on GitHub.
 ///
 /// This class provides static methods for initializing the `GhSnitch` instance,
@@ -52,11 +55,13 @@ class GhSnitch {
       {required String token,
       required String owner,
       required String repo,
-      int maxDuplicatedReports = 20}) {
+      int maxDuplicatedReports = 20,
+      OnReport onReport}) {
     _instance.initialize(
         token: token,
         owner: owner,
         repo: repo,
+        onReport: onReport,
         maxDuplicatedReports: maxDuplicatedReports);
   }
 
