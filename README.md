@@ -13,6 +13,7 @@ demo for testing : https://gh-snitch.web.app
 - Submit comments from the user and reply from GitHub issues by repository owners
 - Include screenshots in the report for better issue clarification.
 - Handled duplicated reports by added comment (+1) for duplicate issues
+- Use onReport method for handle api integrations
 - Create follow labels for package
 	- GhSnitch-external for Errors not caught by Flutter Framework
 	- GhSnitch-internal for Errors caught by Flutter Framework

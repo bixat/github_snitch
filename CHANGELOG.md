@@ -59,7 +59,11 @@
 * handled duplicated issues by add (+1) as comment on duplicated issues
 
 ## 0.0.16
+* Added onReport callback for handle api integrations
 * Fixed duplicated issues caused by pagination with using search api
 
 ## 0.0.17
 * Fixed report manually issue (hotfix)
+
+## 0.0.17
+* Addded onReport method for external usage

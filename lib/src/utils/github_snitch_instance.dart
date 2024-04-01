@@ -11,6 +11,7 @@ import 'package:github_snitch/src/utils/extensions.dart';
 import 'package:github_snitch/src/utils/get_app_version.dart';
 import 'package:mime/mime.dart';
 
+import '../gh_snitch.dart';
 import '../models/comment.dart';
 import '../models/issue.dart';
 import 'constants.dart';
@@ -22,6 +23,7 @@ class GhSnitchInstance {
   String? token;
   String? owner;
   String? repo;
+  OnReport? onReport;
   late GhRequest ghRequest;
   static GhSnitchInstance get instance => GhSnitchInstance();
   bool get initialized => token != null && repo != null && owner != null;
@@ -73,7 +75,7 @@ class GhSnitchInstance {
         issueBody["milestone"] = milestone;
 
         String issueBodyToString = json.encode(issueBody);
-
+        onReport?.call(title, body, labels, milestone, userId);
         GhResponse response = await ghRequest.request("POST", issueEndpoint,
             body: issueBodyToString);
         if (response.statusCode == 201) {
@@ -136,10 +138,14 @@ class GhSnitchInstance {
   /// Initializes the `GhSnitchInstance` by setting the `token`, `owner`, and `repo` properties.
   /// It also creates a `GhRequest` object using the `token` property and calls the `reportSavedIssues` method.
   void initialize(
-      {required String token, required String owner, required String repo}) {
+      {required String token,
+      required String owner,
+      required String repo,
+      OnReport onReport}) {
     this.token = token;
     this.owner = owner;
     this.repo = repo;
+    this.onReport = onReport;
     if (token.isEmpty || owner.isEmpty || repo.isEmpty) {
       log("🔴 Echec to initialize GhSnitch");
     } else {
