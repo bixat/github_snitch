@@ -137,7 +137,10 @@ class GhSnitchInstance {
   /// Initializes the `GhSnitchInstance` by setting the `token`, `owner`, and `repo` properties.
   /// It also creates a `GhRequest` object using the `token` property and calls the `reportSavedIssues` method.
   void initialize(
-      {required String token, required String owner, required String repo, int maxDuplicatedReports = 20}) {
+      {required String token,
+      required String owner,
+      required String repo,
+      required int maxDuplicatedReports}) {
     this.token = token;
     this.owner = owner;
     this.repo = repo;
@@ -210,7 +213,7 @@ class GhSnitchInstance {
   /// Checks if an issue with a similar `body` has already been reported in the repository.
   /// It takes the `body` as required parametes.
   Future<bool> isAlreadyReported(String body) async {
-    bool isAlreadyReported = false;
+    bool isDuplicated = false;
     body = body
         .replaceAll("```", "")
         .substring(0, math.min(body.length, 255))
@@ -220,13 +223,16 @@ class GhSnitchInstance {
     GhResponse ghResponse = await ghRequest.request("GET", url, isSearch: true);
     if (ghResponse.statusCode == 200) {
       final count = ghResponse.response['total_count'];
-      isAlreadyReported = count != 0 || count <= maxDuplicatedReports;
-      if (isAlreadyReported) {
-        await submitComment(
-            ghResponse.response['items'][0][issueNumber].toString(), "+1");
+      isDuplicated = count != 0;
+      if (isDuplicated) {
+        final comments = ghResponse.response["items"].first["comments"];
+        if (comments < maxDuplicatedReports) {
+          await submitComment(
+              ghResponse.response['items'][0][issueNumber].toString(), "+1");
+        }
       }
     }
-    return isAlreadyReported;
+    return isDuplicated;
   }
 
   /// Retrieves all the issues in the repository that contain the specified `userId`.

@@ -49,8 +49,15 @@ class GhSnitch {
   /// GhSnitch.initialize(token: 'your_github_token_here', owner: 'your_github_repo_owner_here', repo: 'your_github_repo_name_here');
   /// ```
   static initialize(
-      {required String token, required String owner, required String repo}) {
-    _instance.initialize(token: token, owner: owner, repo: repo);
+      {required String token,
+      required String owner,
+      required String repo,
+      int maxDuplicatedReports = 20}) {
+    _instance.initialize(
+        token: token,
+        owner: owner,
+        repo: repo,
+        maxDuplicatedReports: maxDuplicatedReports);
   }
 
   /// Reports an issue or bug on GitHub with the given title and body.
