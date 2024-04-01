@@ -11,6 +11,7 @@ import 'package:github_snitch/src/utils/extensions.dart';
 import 'package:github_snitch/src/utils/get_app_version.dart';
 import 'package:mime/mime.dart';
 
+import '../gh_snitch.dart';
 import '../models/comment.dart';
 import '../models/issue.dart';
 import 'constants.dart';
@@ -23,6 +24,7 @@ class GhSnitchInstance {
   String? owner;
   String? repo;
   int? maxDuplicatedReports;
+  OnReport? onReport;
   late GhRequest ghRequest;
   static GhSnitchInstance get instance => GhSnitchInstance();
   bool get initialized => token != null && repo != null && owner != null;
@@ -74,7 +76,7 @@ class GhSnitchInstance {
         issueBody["milestone"] = milestone;
 
         String issueBodyToString = json.encode(issueBody);
-
+        onReport?.call(title, body, labels, milestone, userId);
         GhResponse response = await ghRequest.request("POST", issueEndpoint,
             body: issueBodyToString);
         if (response.statusCode == 201) {
@@ -140,11 +142,13 @@ class GhSnitchInstance {
       {required String token,
       required String owner,
       required String repo,
-      required int maxDuplicatedReports}) {
+      required int maxDuplicatedReports,
+      OnReport onReport}) {
     this.token = token;
     this.owner = owner;
     this.repo = repo;
     this.maxDuplicatedReports = maxDuplicatedReports;
+    this.onReport = onReport;
     if (token.isEmpty || owner.isEmpty || repo.isEmpty) {
       log("🔴 Echec to initialize GhSnitch");
     } else {

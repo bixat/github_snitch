@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:github_snitch/github_snitch.dart';
@@ -8,6 +10,9 @@ Future<void> main() async {
   GhSnitch.initialize(
       owner: owner,
       maxDuplicatedReports: 2,
+      onReport: (title, body, labels, milestone, userId) {
+        log(title);
+      },
       token: const String.fromEnvironment('token'),
       repo: const String.fromEnvironment("repo"));
 
