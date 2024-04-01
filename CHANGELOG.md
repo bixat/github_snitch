@@ -66,4 +66,4 @@
 * Fixed report manually issue (hotfix)
 
 ## 0.0.17
-* Addded onReport method for external usage
+* Added maxDuplicatedReports parameter for over control on duplicated reports count

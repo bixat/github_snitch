@@ -9,13 +9,14 @@ Future<void> main() async {
   const String owner = String.fromEnvironment('owner');
   GhSnitch.initialize(
       owner: owner,
+      maxDuplicatedReports: 2,
       onReport: (title, body, labels, milestone, userId) {
         log(title);
       },
       token: const String.fromEnvironment('token'),
       repo: const String.fromEnvironment("repo"));
 
-  if (kReleaseMode) {
+  if (!kReleaseMode) {
     // For report exceptions & bugs Automaticlly
     GhSnitch.listenToExceptions(assignees: [owner], labels: ['flavorX']);
   }

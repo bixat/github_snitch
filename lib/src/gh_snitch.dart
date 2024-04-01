@@ -55,9 +55,14 @@ class GhSnitch {
       {required String token,
       required String owner,
       required String repo,
+      int maxDuplicatedReports = 20,
       OnReport onReport}) {
     _instance.initialize(
-        token: token, owner: owner, repo: repo, onReport: onReport);
+        token: token,
+        owner: owner,
+        repo: repo,
+        onReport: onReport,
+        maxDuplicatedReports: maxDuplicatedReports);
   }
 
   /// Reports an issue or bug on GitHub with the given title and body.
