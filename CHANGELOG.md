@@ -67,4 +67,4 @@
 ## 0.0.18
 * Added maxDuplicatedReports parameter for over control on duplicated reports count
 * Added labels to duplicated reports comment
-* Added onReport callback for handle api integrations
+* Added onReport callback parameter for handle api integrations
