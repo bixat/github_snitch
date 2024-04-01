@@ -60,3 +60,7 @@
 
 ## 0.0.16
 * Added onReport callback for handle api integrations
+* Fixed duplicated issues caused by pagination with using search api
+
+## 0.0.17
+* Fixed report manually issue (hotfix)
